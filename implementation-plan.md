@@ -3,7 +3,7 @@
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
 > **Last Updated**: 2026-01-16
-> **Current Phase**: Phase 1 — Core Infrastructure
+> **Current Phase**: Phase 2 — Design Agent
 
 ---
 
@@ -12,7 +12,7 @@
 | Phase | Description | Status | Issues | PRs |
 |-------|-------------|--------|--------|-----|
 | 0 | Repository Setup | ✅ Complete | #1 | #2 |
-| 1 | Core Infrastructure | ⬜ Not Started | — | — |
+| 1 | Core Infrastructure | ✅ Complete | #3 | #4 |
 | 2 | Design Agent | ⬜ Not Started | — | — |
 | 3 | Build Agent | ⬜ Not Started | — | — |
 | 4 | QA Agent | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 1 — Core Infrastructure
-**Working On**: Ready to begin Phase 1
+**Phase**: 2 — Design Agent
+**Working On**: Ready to begin Phase 2
 **Blockers**: None
-**Next Action**: Implement configuration management and workflow state machine
+**Next Action**: Create GDD template and implement DesignAgent
 
 ---
 
@@ -86,90 +86,90 @@ Build the orchestration foundation.
 
 ### Tasks
 
-- [ ] **1.1** Implement configuration management (`src/game_workflow/config.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.1** Implement configuration management (`src/game_workflow/config.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
     - Load from environment variables
     - Load from `~/.game-workflow/config.toml`
     - Pydantic models for validation
     - Sensible defaults
+    - Settings caching with reload_settings()
 
-- [ ] **1.2** Implement state management (`src/game_workflow/orchestrator/state.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.2** Implement state management (`src/game_workflow/orchestrator/state.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
     - JSON-based persistence
-    - State transitions: `INIT → DESIGN → BUILD → QA → PUBLISH → COMPLETE`
-    - Checkpoint/resume capability
-    - State inspection CLI commands
+    - State transitions with validation: `INIT → DESIGN → BUILD → QA → PUBLISH → COMPLETE`
+    - Checkpoint/resume capability with CheckpointData model
+    - list_all(), delete(), cleanup_old() methods
 
-- [ ] **1.3** Implement workflow orchestrator (`src/game_workflow/orchestrator/workflow.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.3** Implement workflow orchestrator (`src/game_workflow/orchestrator/workflow.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - Main workflow state machine
-    - Phase transitions
-    - Error handling and recovery
-    - Hook integration points
+    - Main workflow state machine with phase transitions
+    - Hook integration points for all phases
+    - Error handling with automatic FAILED state
+    - resume() and resume_latest() class methods
 
-- [ ] **1.4** Implement custom exceptions (`src/game_workflow/orchestrator/exceptions.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.4** Implement custom exceptions (`src/game_workflow/orchestrator/exceptions.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - `WorkflowError` base class
-    - `ApprovalTimeoutError`
-    - `BuildFailedError`
-    - `PublishFailedError`
-    - `ConfigurationError`
+    - `WorkflowError` base class with context dict
+    - `ApprovalTimeoutError`, `ApprovalRejectedError`
+    - `InvalidTransitionError`, `StateNotFoundError`
+    - `ConfigurationError`, `AgentError`
 
-- [ ] **1.5** Implement CLI entry point (`src/game_workflow/main.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.5** Implement CLI entry point (`src/game_workflow/main.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - Use `typer` for CLI
-    - Commands: `run`, `status`, `cancel`, `resume`, `state`
-    - Rich output formatting
+    - Commands: `run`, `status`, `cancel`, `resume`, `version`
+    - `state` subcommand: `show`, `list`, `reset`, `cleanup`
+    - Rich output formatting with colored phases
 
-- [ ] **1.6** Implement base agent class (`src/game_workflow/agents/base.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.6** Implement base agent class (`src/game_workflow/agents/base.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - Abstract base for all agents
-    - Common Agent SDK setup
-    - Logging integration
-    - Error handling patterns
+    - Logging integration with log_info/debug/error
+    - _validate_config() for API key checking
+    - execute() wrapper with error handling
+    - add_artifact() helper method
 
-- [ ] **1.7** Implement logging hook (`src/game_workflow/hooks/logging.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.7** Implement logging hook (`src/game_workflow/hooks/logging.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - Log all tool calls
-    - Structured logging (JSON)
-    - Console + file output
+    - Structured JSON logging with JSONFormatter
+    - Console + rotating file output (10MB, 5 backups)
+    - on_tool_call, on_approval_requested/received methods
 
-- [ ] **1.8** Implement checkpoint hook (`src/game_workflow/hooks/checkpoint.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **1.8** Implement checkpoint hook (`src/game_workflow/hooks/checkpoint.py`)
+  - Issue: #3
+  - PR: #4
+  - Merged: 2026-01-16
   - Notes:
-    - Save state after each tool call
-    - Enable resume from any point
-    - Prune old checkpoints
+    - Auto-pruning of old checkpoints (max 50)
+    - Checkpoint on phase start/complete/error
+    - Selective tool call checkpointing
 
 ### Phase 1 Completion Criteria
-- [ ] `python -m game_workflow status` works
-- [ ] Configuration loads from env and file
-- [ ] State persists across restarts
-- [ ] Workflow can be started (stubs for agents)
-- [ ] All tests pass: `pytest tests/unit/test_orchestrator.py`
+- [x] `python -m game_workflow status` works
+- [x] Configuration loads from env and file
+- [x] State persists across restarts
+- [x] Workflow can be started (stubs for agents)
+- [x] All tests pass: `pytest tests/unit/test_orchestrator.py`
 
 ---
 
@@ -634,6 +634,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-16 | Phase 1 completed | PR #4 merged with core infrastructure |
 | 2026-01-16 | Phase 0 completed | PR #2 merged with full project structure |
 | 2026-01-16 | Initial plan created | Project kickoff |
 
