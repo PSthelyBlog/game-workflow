@@ -12,11 +12,25 @@ from game_workflow.agents.build import BuildAgent
 from game_workflow.agents.design import DesignAgent
 from game_workflow.agents.publish import PublishAgent
 from game_workflow.agents.qa import QAAgent
+from game_workflow.agents.schemas import (
+    ComplexityLevel,
+    DesignOutput,
+    GameConcept,
+    GameDesignDocument,
+    GameEngine,
+    TechnicalSpecification,
+)
 
 __all__ = [
     "BaseAgent",
     "BuildAgent",
+    "ComplexityLevel",
     "DesignAgent",
+    "DesignOutput",
+    "GameConcept",
+    "GameDesignDocument",
+    "GameEngine",
     "PublishAgent",
     "QAAgent",
+    "TechnicalSpecification",
 ]
