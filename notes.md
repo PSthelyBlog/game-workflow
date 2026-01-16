@@ -311,37 +311,137 @@ pyproject.toml               (+1 line) - jinja2 dependency
 
 ---
 
-## Next Session: Phase 3 Tasks
+## Session 4: 2026-01-16 — Phase 3 Complete
 
-Phase 3 focuses on the Build Agent. Key tasks:
+### Summary
 
-1. **3.1** Create Phaser.js scaffold (`templates/scaffolds/phaser/`)
-   - `package.json` with Phaser dependency
-   - Basic `index.html`
-   - `src/main.js` entry point
-   - Vite config for dev/build
+Implemented all 5 tasks for Phase 3 Build Agent in a single PR (#8).
 
-2. **3.2** Create Phaser game skill (`skills/phaser-game/SKILL.md`)
-   - Instructions for Claude Code to implement Phaser games
-   - Common patterns and best practices
+### Key Implementation Decisions
 
-3. **3.3** Implement BuildAgent (`src/game_workflow/agents/build.py`)
-   - Copy scaffold to output directory
-   - Invoke Claude Code as subprocess
-   - Monitor progress and capture output
-   - Handle build failures with retry logic
+**Phaser.js Scaffold (3.1):**
+- Used Phaser 3.80 (latest stable) and Vite 5.4 for fast builds
+- Scene structure: BootScene, PreloadScene, MenuScene, GameScene
+- PreloadScene includes loading progress bar
+- GameScene includes basic player movement, score, pause, game over flow
+- Responsive scaling with FIT mode, auto-center
 
-4. **3.4** Add subprocess management utilities
+**Phaser Game Skill (3.2):**
+- Comprehensive ~800 line guide for Claude Code
+- Covers entire Phaser ecosystem: scenes, sprites, animations, physics
+- Input handling: keyboard, mouse, touch
+- Audio management with autoplay policy handling
+- Cameras, tilemaps, UI patterns
+- Common game patterns by genre (platformer, top-down, shooter)
+- Object pooling for performance
+- Save/load game state
+- Build and export instructions for itch.io
 
-5. **3.5** Write unit tests for BuildAgent
+**BuildAgent (3.3):**
+- Async workflow: copy scaffold → npm install → generate prompt → invoke Claude Code → npm build → verify
+- Supports multiple input formats: gdd_path, design_output object, or separate gdd/tech_spec
+- Generates comprehensive build prompt from GDD with mechanics, actions, levels, win/loss conditions
+- skip_npm_install and skip_build flags for testing
+- Proper error handling with BuildFailedError
 
-### Key Considerations for Phase 3
+**Subprocess Utilities (3.4):**
+- `ProcessResult` dataclass with `success` property (return_code == 0 and not timed_out)
+- `SubprocessConfig` for timeout, cwd, env, capture_output, stream_output
+- `run_subprocess` with async output capture and timeout handling
+- `run_npm_command` helper with output streaming
+- `ClaudeCodeRunner` class for invoking Claude Code with context files and allowed tools
+- `find_executable` helper for locating commands in PATH
 
-- BuildAgent will invoke Claude Code as a subprocess
-- Need to pass GDD and tech spec as context to Claude Code
-- Consider using the `-p` (print) flag for non-interactive mode
-- May need to implement retry logic for failed builds
-- Subprocess output capture needs careful handling
+**Tests (3.5):**
+- 29 unit tests for BuildAgent
+- Scaffold copying, design data loading, prompt generation
+- Integration tests with mocked subprocess calls
+- ProcessResult success property tests
+
+### Issues Encountered & Solutions
+
+1. **RUF022 `__all__` is not sorted:**
+   - Ruff requires alphabetically sorted `__all__` lists
+   - Solution: Removed comments and sorted entries alphabetically
+
+2. **TYPE_CHECKING for Path in tests:**
+   - Ruff TC003 requires Path in TYPE_CHECKING when only used for type hints
+   - Solution: Moved `from pathlib import Path` into TYPE_CHECKING block
+
+3. **Nested with statements:**
+   - Ruff SIM117 prefers single with statement with multiple contexts
+   - Solution: Combined `with patch(...), pytest.raises(...):` syntax
+
+### Files Modified in Phase 3
+
+```
+templates/scaffolds/phaser/
+├── package.json             (new) - Phaser 3.80, Vite 5.4
+├── index.html               (new) - responsive viewport
+├── vite.config.js           (new) - optimized build config
+├── README.md                (new) - scaffold usage guide
+├── src/
+│   ├── main.js              (new) - game config, visibility handling
+│   ├── scenes/
+│   │   ├── BootScene.js     (new) - initial setup
+│   │   ├── PreloadScene.js  (new) - loading with progress bar
+│   │   ├── MenuScene.js     (new) - menu with hover effects
+│   │   └── GameScene.js     (new) - game template with score, pause, game over
+│   ├── objects/.gitkeep     (new)
+│   └── utils/.gitkeep       (new)
+└── assets/
+    ├── images/.gitkeep      (new)
+    ├── audio/.gitkeep       (new)
+    └── fonts/.gitkeep       (new)
+
+skills/phaser-game/SKILL.md  (rewritten) - ~800 lines comprehensive guide
+
+src/game_workflow/
+├── agents/build.py          (+500 lines) - full BuildAgent implementation
+└── utils/
+    ├── __init__.py          (+15 lines) - export subprocess utilities
+    └── subprocess.py        (new, 347 lines) - async subprocess management
+
+tests/unit/
+└── test_build_agent.py      (new, 569 lines) - 29 tests
+```
+
+### Test Coverage
+
+- 109 unit tests total (29 new for Build Agent)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 4 Tasks
+
+Phase 4 focuses on the QA Agent. Key tasks:
+
+1. **4.1** Create game testing skill (`skills/game-testing/SKILL.md`)
+   - Playwright setup for browser testing
+   - Common game test patterns
+   - Screenshot comparison
+
+2. **4.2** Implement QAAgent (`src/game_workflow/agents/qa.py`)
+   - Run automated test suite
+   - Perform smoke tests (game loads, no console errors)
+   - Generate QA report
+   - Suggest fixes for found issues
+
+3. **4.3** Implement automated smoke tests
+   - Playwright-based browser tests
+   - Check game loads, no JS errors, basic interactions
+
+4. **4.4** Write unit tests for QAAgent
+
+### Key Considerations for Phase 4
+
+- Playwright will be used for browser automation
+- Need to start a dev server to test the game
+- Console error detection via Playwright
+- May want screenshot capture for visual testing
+- QA report should be structured (JSON) for later processing
 
 ---
 

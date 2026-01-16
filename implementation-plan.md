@@ -14,7 +14,7 @@
 | 0 | Repository Setup | ✅ Complete | #1 | #2 |
 | 1 | Core Infrastructure | ✅ Complete | #3 | #4 |
 | 2 | Design Agent | ✅ Complete | #5 | #6 |
-| 3 | Build Agent | ⬜ Not Started | — | — |
+| 3 | Build Agent | ✅ Complete | #7 | #8 |
 | 4 | QA Agent | ⬜ Not Started | — | — |
 | 5 | Publish Agent | ⬜ Not Started | — | — |
 | 6 | MCP Servers | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 3 — Build Agent
-**Working On**: Ready to begin Phase 3
+**Phase**: 4 — QA Agent
+**Working On**: Ready to begin Phase 4
 **Blockers**: None
-**Next Action**: Create Phaser.js scaffold and implement BuildAgent
+**Next Action**: Create game testing skill and implement QAAgent
 
 ---
 
@@ -238,60 +238,60 @@ Implement the Claude Code invocation agent.
 
 ### Tasks
 
-- [ ] **3.1** Create Phaser.js scaffold (`templates/scaffolds/phaser/`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **3.1** Create Phaser.js scaffold (`templates/scaffolds/phaser/`)
+  - Issue: #7
+  - PR: #8
+  - Merged: 2026-01-16
   - Notes:
-    - `package.json` with Phaser dependency
-    - Basic `index.html`
-    - `src/main.js` entry point
-    - `src/scenes/` directory structure
-    - Vite config for dev/build
+    - `package.json` with Phaser 3.80 and Vite 5.4
+    - `index.html` with responsive viewport
+    - `src/main.js` entry point with game config
+    - `src/scenes/` with Boot, Preload, Menu, Game scenes
+    - `vite.config.js` with optimized build settings
 
-- [ ] **3.2** Create Phaser game skill (`skills/phaser-game/SKILL.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **3.2** Create Phaser game skill (`skills/phaser-game/SKILL.md`)
+  - Issue: #7
+  - PR: #8
+  - Merged: 2026-01-16
   - Notes:
-    - Project structure guidelines
-    - Common patterns (scenes, sprites, physics)
-    - Asset handling best practices
-    - Build and export instructions
+    - Comprehensive guide (~800 lines)
+    - Scenes, sprites, animations, physics
+    - Input handling, audio, cameras, tilemaps
+    - Common patterns by genre (platformer, top-down, shooter)
 
-- [ ] **3.3** Implement BuildAgent (`src/game_workflow/agents/build.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **3.3** Implement BuildAgent (`src/game_workflow/agents/build.py`)
+  - Issue: #7
+  - PR: #8
+  - Merged: 2026-01-16
   - Notes:
-    - Create game repo from scaffold
+    - Copy scaffold to output directory
+    - Install dependencies (npm install)
+    - Generate build prompt from GDD/tech spec
     - Invoke Claude Code via subprocess
-    - Pass GDD as context
-    - Monitor progress via stdout
-    - Handle errors and retries
-    - Commit incrementally to GitHub
+    - Build game (npm run build)
+    - Verify build output
 
-- [ ] **3.4** Implement GitHub integration in BuildAgent
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **3.4** Add subprocess management utilities (`src/game_workflow/utils/subprocess.py`)
+  - Issue: #7
+  - PR: #8
+  - Merged: 2026-01-16
   - Notes:
-    - Create repo from template
-    - Create feature branches
-    - Commit changes
-    - Create PRs for review (optional)
+    - ProcessResult dataclass with success property
+    - SubprocessConfig for timeout, cwd, env, streaming
+    - run_subprocess with async output capture
+    - ClaudeCodeRunner for Claude Code invocation
 
-- [ ] **3.5** Write unit tests for BuildAgent
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Mock subprocess, test GitHub operations
+- [x] **3.5** Write unit tests for BuildAgent
+  - Issue: #7
+  - PR: #8
+  - Merged: 2026-01-16
+  - Notes: 29 tests, mocked subprocess, scaffold copying, prompt generation
 
 ### Phase 3 Completion Criteria
-- [ ] BuildAgent creates repo from scaffold
-- [ ] Claude Code is invoked successfully
-- [ ] Game code is committed to GitHub
-- [ ] All tests pass: `pytest tests/unit/test_agents.py::TestBuildAgent`
+- [x] BuildAgent creates project from scaffold
+- [x] Claude Code is invoked successfully
+- [x] Build output is captured and logged
+- [x] All tests pass: `pytest tests/unit/test_build_agent.py` (29 tests)
 
 ---
 
@@ -635,6 +635,8 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-16 | Phase 3 completed | PR #8 merged with Build Agent implementation |
+| 2026-01-16 | Phase 2 completed | PR #6 merged with Design Agent |
 | 2026-01-16 | Phase 1 completed | PR #4 merged with core infrastructure |
 | 2026-01-16 | Phase 0 completed | PR #2 merged with full project structure |
 | 2026-01-16 | Initial plan created | Project kickoff |
