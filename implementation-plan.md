@@ -3,7 +3,7 @@
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
 > **Last Updated**: 2026-01-16
-> **Current Phase**: Phase 2 — Design Agent
+> **Current Phase**: Phase 3 — Build Agent
 
 ---
 
@@ -13,7 +13,7 @@
 |-------|-------------|--------|--------|-----|
 | 0 | Repository Setup | ✅ Complete | #1 | #2 |
 | 1 | Core Infrastructure | ✅ Complete | #3 | #4 |
-| 2 | Design Agent | ⬜ Not Started | — | — |
+| 2 | Design Agent | ✅ Complete | #5 | #6 |
 | 3 | Build Agent | ⬜ Not Started | — | — |
 | 4 | QA Agent | ⬜ Not Started | — | — |
 | 5 | Publish Agent | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 2 — Design Agent
-**Working On**: Ready to begin Phase 2
+**Phase**: 3 — Build Agent
+**Working On**: Ready to begin Phase 3
 **Blockers**: None
-**Next Action**: Create GDD template and implement DesignAgent
+**Next Action**: Create Phaser.js scaffold and implement BuildAgent
 
 ---
 
@@ -179,55 +179,56 @@ Implement the concept and GDD generation agent.
 
 ### Tasks
 
-- [ ] **2.1** Create GDD template (`templates/gdd-template.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Comprehensive game design document structure
+- [x] **2.1** Create GDD template (`templates/gdd-template.md`)
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
+  - Notes: Comprehensive GDD with 8 sections, Jinja2 syntax, optional fields support
 
-- [ ] **2.2** Create concept template (`templates/concept-template.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Brief concept summary format
+- [x] **2.2** Create concept template (`templates/concept-template.md`)
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
+  - Notes: Brief format for concept variations with elevator pitch, features, and technical fit
 
-- [ ] **2.3** Implement template loader (`src/game_workflow/utils/templates.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Load and render Jinja2 templates
+- [x] **2.3** Implement template loader (`src/game_workflow/utils/templates.py`)
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
+  - Notes: Jinja2 environment with StrictUndefined, custom filters, render helpers
 
-- [ ] **2.4** Implement DesignAgent (`src/game_workflow/agents/design.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **2.4** Implement DesignAgent (`src/game_workflow/agents/design.py`)
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
   - Notes:
-    - Generate 3-5 concept variations
-    - User selects or Claude picks best
-    - Generate full GDD for selected concept
-    - Output: `concept.json`, `gdd.md`, `tech-spec.md`
-    - Use extended thinking for creative decisions
+    - Generates 1-5 concept variations (configurable)
+    - Generates full GDD from selected concept
+    - Generates technical specification
+    - Saves artifacts as JSON and rendered markdown
+    - Proper error handling and logging
 
-- [ ] **2.5** Implement structured output schemas for design artifacts
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **2.5** Implement structured output schemas for design artifacts
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
   - Notes:
-    - Pydantic models for concept, GDD
-    - Validation before saving
-    - JSON Schema generation for API
+    - GameConcept, GameDesignDocument, TechnicalSpecification models
+    - DesignOutput combined output model
+    - JSON Schema generation functions
+    - Full validation with Pydantic v2
 
-- [ ] **2.6** Write unit tests for DesignAgent
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Mock Claude API, test all outputs
+- [x] **2.6** Write unit tests for DesignAgent
+  - Issue: #5
+  - PR: #6
+  - Merged: 2026-01-16
+  - Notes: 80 tests total, mocked API calls, template rendering tests
 
 ### Phase 2 Completion Criteria
-- [ ] DesignAgent generates valid concept.json
-- [ ] DesignAgent generates valid gdd.md
-- [ ] Templates render correctly
-- [ ] All tests pass: `pytest tests/unit/test_agents.py::TestDesignAgent`
+- [x] DesignAgent generates valid concept.json
+- [x] DesignAgent generates valid gdd.md
+- [x] Templates render correctly
+- [x] All tests pass: `pytest tests/unit/test_agents.py::TestDesignAgent`
 
 ---
 

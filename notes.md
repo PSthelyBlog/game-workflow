@@ -217,36 +217,131 @@ tests/unit/
 
 ---
 
-## Next Session: Phase 2 Tasks
+## Session 3: 2026-01-16 — Phase 2 Complete
 
-Phase 2 focuses on the Design Agent. Key tasks:
+### Summary
 
-1. **2.1** Create GDD template (`templates/gdd-template.md`)
-   - Already have placeholder, needs comprehensive structure
+Implemented all 6 tasks for Phase 2 Design Agent in a single PR (#6).
 
-2. **2.2** Create concept template (`templates/concept-template.md`)
-   - Already have placeholder, needs brief format
+### Key Implementation Decisions
 
-3. **2.3** Implement template loader (`src/game_workflow/utils/templates.py`)
-   - Load and render Jinja2 templates
+**Templates (2.1, 2.2):**
+- GDD template has 8 major sections covering all aspects of game design
+- Used Jinja2 `is defined` tests for optional fields: `{% if mechanic.controls is defined and mechanic.controls %}`
+- Concept template is lightweight, focused on selling the concept and assessing scope
+- Both templates work with both Pydantic models and plain dicts
 
-4. **2.4** Implement DesignAgent (`src/game_workflow/agents/design.py`)
-   - Generate 3-5 concept variations
-   - Generate full GDD for selected concept
-   - Output: `concept.json`, `gdd.md`, `tech-spec.md`
+**Template Loader (2.3):**
+- Created Jinja2 environment with `StrictUndefined` for early error detection
+- Added `trim_blocks` and `lstrip_blocks` for cleaner output
+- Custom `datetime` filter for consistent date formatting
+- `render_gdd()` and `render_concept()` convenience functions
+- `validate_template_context()` for pre-flight checking
 
-5. **2.5** Implement structured output schemas
-   - Pydantic models for concept, GDD
-   - JSON Schema for API
+**DesignAgent (2.4):**
+- Uses Anthropic SDK directly (not Agent SDK) for API calls
+- Three-step process: concepts → GDD → tech spec
+- Configurable `num_concepts` (1-5, clamped)
+- `_extract_text()` helper for type-safe text extraction from API response
+- JSON parsing handles markdown code blocks and surrounding text
 
-6. **2.6** Write unit tests for DesignAgent
+**Schemas (2.5):**
+- All schemas in separate `schemas.py` module for cleaner imports
+- `GameConcept`: 15+ fields covering all aspects of a concept pitch
+- `GameDesignDocument`: Matches GDD template structure exactly
+- `TechnicalSpecification`: Bridges design to implementation
+- `DesignOutput`: Combines all outputs for serialization
+- JSON Schema export functions for API documentation
 
-### Key Considerations for Phase 2
+**Testing (2.6):**
+- 80 total unit tests (39 new for Design Agent)
+- Mocked API using `anthropic.types.TextBlock` for type-safe mocks
+- Comprehensive template rendering tests
+- Schema validation tests
 
-- Will need to add `jinja2` to dependencies for template rendering
-- DesignAgent will be the first agent to actually call Claude API
-- Consider using extended thinking for creative decisions
-- Need to handle approval gate for concept selection
+### Issues Encountered & Solutions
+
+1. **Jinja2 attribute access on dicts:**
+   - `mechanic.controls` fails if `controls` key doesn't exist in dict
+   - Solution: Use `is defined` test: `{% if mechanic.controls is defined %}`
+
+2. **Anthropic response type handling:**
+   - `response.content[0].text` doesn't work with mypy due to union types
+   - Solution: Created `_extract_text()` helper that uses `isinstance(block, TextBlock)`
+
+3. **Mocking API for tests:**
+   - `MagicMock(text="...")` doesn't satisfy `isinstance(block, TextBlock)`
+   - Solution: Use actual `TextBlock` instances in mocks
+
+4. **Property patching in tests:**
+   - `patch.object(agent, "api_key", None)` fails because `api_key` is a property
+   - Solution: Use `monkeypatch.delenv("ANTHROPIC_API_KEY")` instead
+
+5. **JSON parsing type safety:**
+   - `json.loads()` returns `Any`, mypy wants explicit types
+   - Solution: Explicit type annotations: `result: dict[str, Any] = json.loads(text)`
+
+### Files Modified in Phase 2
+
+```
+templates/
+├── gdd-template.md          (rewritten) - 8 sections, Jinja2 syntax
+└── concept-template.md      (rewritten) - lightweight pitch format
+
+src/game_workflow/
+├── agents/
+│   ├── __init__.py          (+15 lines) - export schemas
+│   ├── design.py            (+550 lines) - full DesignAgent implementation
+│   └── schemas.py           (new, 412 lines) - Pydantic models
+└── utils/
+    └── templates.py         (+150 lines) - Jinja2 loader
+
+tests/unit/
+├── test_agents.py           (+70 lines) - DesignAgent basic tests
+└── test_design_agent.py     (new, 591 lines) - comprehensive tests
+
+pyproject.toml               (+1 line) - jinja2 dependency
+```
+
+### Test Coverage
+
+- 80 unit tests total (39 new for Design Agent)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 3 Tasks
+
+Phase 3 focuses on the Build Agent. Key tasks:
+
+1. **3.1** Create Phaser.js scaffold (`templates/scaffolds/phaser/`)
+   - `package.json` with Phaser dependency
+   - Basic `index.html`
+   - `src/main.js` entry point
+   - Vite config for dev/build
+
+2. **3.2** Create Phaser game skill (`skills/phaser-game/SKILL.md`)
+   - Instructions for Claude Code to implement Phaser games
+   - Common patterns and best practices
+
+3. **3.3** Implement BuildAgent (`src/game_workflow/agents/build.py`)
+   - Copy scaffold to output directory
+   - Invoke Claude Code as subprocess
+   - Monitor progress and capture output
+   - Handle build failures with retry logic
+
+4. **3.4** Add subprocess management utilities
+
+5. **3.5** Write unit tests for BuildAgent
+
+### Key Considerations for Phase 3
+
+- BuildAgent will invoke Claude Code as a subprocess
+- Need to pass GDD and tech spec as context to Claude Code
+- Consider using the `-p` (print) flag for non-interactive mode
+- May need to implement retry logic for failed builds
+- Subprocess output capture needs careful handling
 
 ---
 
