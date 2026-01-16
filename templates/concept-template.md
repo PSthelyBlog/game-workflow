@@ -1,19 +1,95 @@
-# Game Concept: {{GAME_TITLE}}
+# Game Concept: {{ title }}
+
+> Concept {{ concept_number | default("") }} of {{ total_concepts | default("") }}
+> Generated: {{ generated_at }}
+
+---
 
 ## Elevator Pitch
-{{ELEVATOR_PITCH}}
+
+{{ elevator_pitch }}
+
+---
 
 ## Core Hook
-{{CORE_HOOK}}
+
+{{ core_hook }}
+
+---
 
 ## Key Features
-{{KEY_FEATURES}}
+
+{% for feature in key_features %}
+- {{ feature }}
+{% endfor %}
+
+---
 
 ## Target Experience
-{{TARGET_EXPERIENCE}}
+
+**Player Fantasy:** {{ player_fantasy }}
+
+**Emotional Journey:** {{ emotional_journey }}
+
+**Session Length:** {{ session_length }}
+
+---
+
+## Genre & Style
+
+**Primary Genre:** {{ primary_genre }}
+
+**Sub-genres:** {{ sub_genres | join(", ") }}
+
+**Tone:** {{ tone }}
+
+**Visual Style:** {{ visual_style }}
+
+---
+
+## Core Mechanics Preview
+
+{% for mechanic in core_mechanics %}
+### {{ mechanic.name }}
+{{ mechanic.brief_description }}
+{% endfor %}
+
+---
 
 ## Similar Games
-{{SIMILAR_GAMES}}
+
+{% for game in similar_games %}
+- **{{ game.name }}**: {{ game.what_we_take }}
+{% endfor %}
+
+---
 
 ## Unique Selling Points
-{{UNIQUE_SELLING_POINTS}}
+
+{% for usp in unique_selling_points %}
+1. {{ usp }}
+{% endfor %}
+
+---
+
+## Technical Fit
+
+**Recommended Engine:** {{ recommended_engine }}
+
+**Complexity Level:** {{ complexity_level }}
+
+**Estimated Scope:** {{ estimated_scope }}
+
+---
+
+## Risks & Considerations
+
+{% for risk in risks %}
+- {{ risk }}
+{% endfor %}
+
+---
+
+## Why This Concept?
+
+{{ rationale }}
