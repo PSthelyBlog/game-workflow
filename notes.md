@@ -115,37 +115,138 @@ From pyproject.toml:
 
 ---
 
-## Next Session: Phase 1 Tasks
+## Session 2: 2026-01-16 — Phase 1 Complete
 
-Phase 1 focuses on Core Infrastructure. Key tasks:
+### Summary
 
-1. **1.1** Enhance configuration management
-   - Already have basic config.py, needs TOML file loading
+Implemented all 8 tasks for Phase 1 Core Infrastructure in a single PR (#4).
 
-2. **1.2** Enhance state management
-   - Already have basic state.py, needs state transitions
+### Key Implementation Decisions
 
-3. **1.3** Implement workflow orchestrator
-   - Main state machine with phase transitions
+**Configuration (1.1):**
+- Used `tomli` for TOML parsing (already in dependencies)
+- TOML config loaded BEFORE env vars via Pydantic's `model_validator(mode="before")`
+- Added `_deep_merge()` helper to merge nested config dicts
+- Settings are cached with `@lru_cache` and can be refreshed with `reload_settings()`
 
-4. **1.4** Enhance exceptions
-   - Already have basic exceptions, may need more
+**State Management (1.2):**
+- Moved `WorkflowPhase` enum from workflow.py to state.py to avoid circular imports
+- State transitions are validated with `can_transition_to()` method
+- Added `CheckpointData` Pydantic model for checkpoint tracking
+- QA phase can go back to BUILD (for fix-and-retry flows)
 
-5. **1.5** Enhance CLI
-   - Already have basic CLI, needs state commands
+**Workflow Orchestrator (1.3):**
+- Hooks are called via `_notify_phase_start()`, `_notify_phase_complete()`, `_notify_error()`
+- Hook failures are logged but don't stop the workflow
+- Stub implementations for agent phases return `{"status": "stub"}` for testing
 
-6. **1.6** Enhance base agent
-   - Already have basic agent, needs Agent SDK integration
+**Exceptions (1.4):**
+- All exceptions now have optional `context: dict[str, Any]` parameter
+- `InvalidTransitionError` stores `from_phase` and `to_phase` attributes
+- Used `TYPE_CHECKING` block for `WorkflowPhase` import to avoid circular imports
 
-7. **1.7-1.8** Implement hooks
-   - Already have stub hooks, need full implementation
+**CLI (1.5):**
+- Used `typer.Typer()` subgroups for `state` commands
+- Rich Console for all output with phase-specific colors
+- Type narrowing pattern for mypy: declare `state: WorkflowState | None = None` before conditional branches
 
-### Completion Criteria for Phase 1
-- `python -m game_workflow status` works
-- Configuration loads from env and file
-- State persists across restarts
-- Workflow can be started (stubs for agents)
-- All tests pass
+**Base Agent (1.6):**
+- Added `execute()` wrapper that calls `run()` with error handling
+- `_validate_config()` checks for API key before execution
+- Logging methods delegate to a per-agent logger: `logging.getLogger(f"game_workflow.agents.{self.name}")`
+
+**Hooks (1.7-1.8):**
+- Logging hook sets up file rotation: 10MB max, 5 backups
+- `setup_logging()` uses module-level `_logging_configured` flag to avoid duplicate setup
+- Checkpoint hook auto-prunes when exceeding `max_checkpoints` (default 50)
+- Used `# noqa: ARG002` for unused protocol arguments (required for interface compatibility)
+
+### Issues Encountered & Solutions
+
+1. **Circular imports:**
+   - `WorkflowPhase` was in workflow.py but exceptions.py needed it
+   - Solution: Moved `WorkflowPhase` to state.py, use `TYPE_CHECKING` block in exceptions.py
+
+2. **Mypy type narrowing:**
+   - `if state_id: state = load() else: state = get_latest()` didn't narrow type
+   - Solution: Declare `state: WorkflowState | None = None` at start, check `if state is None` after
+
+3. **Path import for TYPE_CHECKING:**
+   - Ruff TC003 wants `Path` in TYPE_CHECKING block when only used for type hints
+   - Solution: `from typing import TYPE_CHECKING` + `if TYPE_CHECKING: from pathlib import Path`
+
+4. **Test timing issues:**
+   - `WorkflowState` uses timestamp for ID, fast tests created duplicates
+   - Solution: Use explicit unique IDs in tests: `WorkflowState(id="state_001", ...)`
+
+5. **Settings persistence across tests:**
+   - `get_settings()` is cached, tests need to reset between runs
+   - Solution: Call `reload_settings()` after changing env vars with monkeypatch
+
+6. **Exception chaining for typer.Exit:**
+   - Ruff B904 requires `raise ... from err` or `raise ... from None`
+   - Solution: `raise typer.Exit(1) from None` when we don't want to chain
+
+### Files Modified in Phase 1
+
+```
+src/game_workflow/
+├── agents/base.py          (+120 lines) - logging, validation, execute()
+├── config.py               (+80 lines)  - TOML loading, deep merge, caching
+├── hooks/
+│   ├── __init__.py         (+5 lines)   - export setup_logging, JSONFormatter
+│   ├── checkpoint.py       (+130 lines) - auto-prune, tool checkpoints
+│   └── logging.py          (+180 lines) - JSON formatter, file rotation
+├── main.py                 (+330 lines) - state commands, Rich output
+└── orchestrator/
+    ├── __init__.py         (+15 lines)  - export all new exceptions
+    ├── exceptions.py       (+130 lines) - context dicts, new exception types
+    ├── state.py            (+200 lines) - WorkflowPhase, transitions, utilities
+    └── workflow.py         (+320 lines) - state machine, hooks, resume
+
+tests/unit/
+├── test_config.py          (new, 97 lines)
+└── test_orchestrator.py    (+270 lines)
+```
+
+### Test Coverage
+
+- 41 unit tests total (6 agents, 7 config, 5 mcp_servers, 23 orchestrator)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 2 Tasks
+
+Phase 2 focuses on the Design Agent. Key tasks:
+
+1. **2.1** Create GDD template (`templates/gdd-template.md`)
+   - Already have placeholder, needs comprehensive structure
+
+2. **2.2** Create concept template (`templates/concept-template.md`)
+   - Already have placeholder, needs brief format
+
+3. **2.3** Implement template loader (`src/game_workflow/utils/templates.py`)
+   - Load and render Jinja2 templates
+
+4. **2.4** Implement DesignAgent (`src/game_workflow/agents/design.py`)
+   - Generate 3-5 concept variations
+   - Generate full GDD for selected concept
+   - Output: `concept.json`, `gdd.md`, `tech-spec.md`
+
+5. **2.5** Implement structured output schemas
+   - Pydantic models for concept, GDD
+   - JSON Schema for API
+
+6. **2.6** Write unit tests for DesignAgent
+
+### Key Considerations for Phase 2
+
+- Will need to add `jinja2` to dependencies for template rendering
+- DesignAgent will be the first agent to actually call Claude API
+- Consider using extended thinking for creative decisions
+- Need to handle approval gate for concept selection
 
 ---
 
