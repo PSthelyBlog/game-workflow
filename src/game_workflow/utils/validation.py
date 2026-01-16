@@ -23,14 +23,10 @@ def validate_prompt(prompt: str) -> str:
     prompt = prompt.strip()
 
     if len(prompt) < MIN_PROMPT_LENGTH:
-        raise ValueError(
-            f"Prompt too short (minimum {MIN_PROMPT_LENGTH} characters)"
-        )
+        raise ValueError(f"Prompt too short (minimum {MIN_PROMPT_LENGTH} characters)")
 
     if len(prompt) > MAX_PROMPT_LENGTH:
-        raise ValueError(
-            f"Prompt too long (maximum {MAX_PROMPT_LENGTH} characters)"
-        )
+        raise ValueError(f"Prompt too long (maximum {MAX_PROMPT_LENGTH} characters)")
 
     return prompt
 
@@ -51,8 +47,7 @@ def validate_engine(engine: str) -> str:
 
     if engine not in SUPPORTED_ENGINES:
         raise ValueError(
-            f"Unsupported engine: {engine}. "
-            f"Supported: {', '.join(sorted(SUPPORTED_ENGINES))}"
+            f"Unsupported engine: {engine}. Supported: {', '.join(sorted(SUPPORTED_ENGINES))}"
         )
 
     return engine

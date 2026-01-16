@@ -32,9 +32,7 @@ class LoggingHook:
         if not logger.handlers:
             handler = logging.StreamHandler()
             handler.setLevel(self.log_level)
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
