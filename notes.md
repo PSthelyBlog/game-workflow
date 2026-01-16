@@ -67,6 +67,7 @@ Per CLAUDE.md, all work must go through Issues and PRs:
 4. Push and create PR with `gh pr create`
 5. After CI passes, merge with `gh pr merge <number> --squash --delete-branch`
 6. Update `implementation-plan.md` on main branch
+7. Update `notes.md` on main branch
 
 ### Files Created in Phase 0
 

@@ -142,7 +142,8 @@ game-workflow/
 2. **Create a feature branch**: `git checkout -b feature/<issue-number>-<short-description>`
 3. **Implement the feature**: Make commits with clear messages referencing the issue
 4. **Create a Pull Request**: Reference the issue with "Closes #<issue-number>"
-5. **After merge**: Update `implementation-plan.md` to reflect progress
+5. **After CI passes**: Merge with `gh pr merge <number> --squash --delete-branch`
+6. **After merge**: Update `implementation-plan.md` to reflect progress and `notes.md` with notes and observations from implementation session
 
 ### Branch Naming Convention
 
@@ -172,6 +173,8 @@ Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 2. Add the PR number and merge date
 3. Update the "Current Status" section
 4. Note any blockers or changes to the plan
+
+**ALWAYS update `notes.md`**: notes and observations from implementation sessions to help future work
 
 ---
 
