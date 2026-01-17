@@ -44,6 +44,10 @@ dev = [
     "mypy>=1.0.0",
     "pre-commit>=3.0.0",
 ]
+qa = [
+    "playwright>=1.40.0",
+    "pytest-playwright>=0.4.0",
+]
 
 [project.scripts]
 game-workflow = "game_workflow.main:app"
