@@ -2,8 +2,8 @@
 
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
-> **Last Updated**: 2026-01-16
-> **Current Phase**: Phase 3 — Build Agent
+> **Last Updated**: 2026-01-17
+> **Current Phase**: Phase 5 — Publish Agent
 
 ---
 
@@ -15,7 +15,7 @@
 | 1 | Core Infrastructure | ✅ Complete | #3 | #4 |
 | 2 | Design Agent | ✅ Complete | #5 | #6 |
 | 3 | Build Agent | ✅ Complete | #7 | #8 |
-| 4 | QA Agent | ⬜ Not Started | — | — |
+| 4 | QA Agent | ✅ Complete | #9 | #10 |
 | 5 | Publish Agent | ⬜ Not Started | — | — |
 | 6 | MCP Servers | ⬜ Not Started | — | — |
 | 7 | Skills | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 4 — QA Agent
-**Working On**: Ready to begin Phase 4
+**Phase**: 5 — Publish Agent
+**Working On**: Ready to begin Phase 5
 **Blockers**: None
-**Next Action**: Create game testing skill and implement QAAgent
+**Next Action**: Create itch.io page template and implement PublishAgent
 
 ---
 
@@ -301,48 +301,57 @@ Implement the testing and validation agent.
 
 ### Tasks
 
-- [ ] **4.1** Create game testing skill (`skills/game-testing/SKILL.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **4.1** Create game testing skill (`skills/game-testing/SKILL.md`)
+  - Issue: #9
+  - PR: #10
+  - Merged: 2026-01-17
   - Notes:
-    - Playwright setup for browser testing
-    - Common game test patterns
-    - Screenshot comparison
-    - Performance benchmarks
+    - Comprehensive Playwright setup (~1600 lines)
+    - Smoke tests, functional tests, visual regression
+    - Performance benchmarking (FPS, memory, load time)
+    - Console error detection and filtering
+    - Input simulation utilities
+    - Canvas inspection techniques
+    - CI/CD integration examples
 
-- [ ] **4.2** Implement QAAgent (`src/game_workflow/agents/qa.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **4.2** Implement QAAgent (`src/game_workflow/agents/qa.py`)
+  - Issue: #9
+  - PR: #10
+  - Merged: 2026-01-17
   - Notes:
-    - Run automated test suite
-    - Perform smoke tests (game loads, no console errors)
-    - Check for common issues (memory leaks, infinite loops)
-    - Generate QA report
-    - Suggest fixes for found issues
+    - DevServerManager for hosting game during tests
+    - PlaywrightTester for browser-based tests
+    - Smoke tests: page loads, canvas, JS errors, game init, console, input
+    - Performance measurement with thresholds
+    - QAReport with JSON and Markdown output
+    - Recommendations engine based on results
+    - Raises QAFailedError for critical failures
 
-- [ ] **4.3** Implement automated smoke tests
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **4.3** Implement automated smoke tests
+  - Issue: #9
+  - PR: #10
+  - Merged: 2026-01-17
   - Notes:
-    - Playwright-based browser tests
-    - Check game loads
-    - Check no JavaScript errors
-    - Check basic interactions work
+    - 6 smoke tests: page_loads, canvas_present, no_javascript_errors,
+      game_initializes, no_console_errors, input_response
+    - Performance tests: performance_fps, performance_load_time
+    - Console error filtering with ignore patterns
 
-- [ ] **4.4** Write unit tests for QAAgent
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Mock test runners, test report generation
+- [x] **4.4** Write unit tests for QAAgent
+  - Issue: #9
+  - PR: #10
+  - Merged: 2026-01-17
+  - Notes:
+    - 49 tests covering all components
+    - TestResult, ConsoleMessage, QAReport dataclasses
+    - DevServerManager and PlaywrightTester classes
+    - QAAgent evaluation and recommendation logic
 
 ### Phase 4 Completion Criteria
-- [ ] QAAgent runs smoke tests
-- [ ] QA report is generated
-- [ ] Issues are identified and reported
-- [ ] All tests pass: `pytest tests/unit/test_agents.py::TestQAAgent`
+- [x] QAAgent runs smoke tests
+- [x] QA report is generated
+- [x] Issues are identified and reported
+- [x] All tests pass: `pytest tests/unit/test_qa_agent.py` (49 tests)
 
 ---
 
@@ -635,6 +644,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-17 | Phase 4 completed | PR #10 merged with QA Agent implementation |
 | 2026-01-16 | Phase 3 completed | PR #8 merged with Build Agent implementation |
 | 2026-01-16 | Phase 2 completed | PR #6 merged with Design Agent |
 | 2026-01-16 | Phase 1 completed | PR #4 merged with core infrastructure |

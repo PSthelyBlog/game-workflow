@@ -414,34 +414,121 @@ tests/unit/
 
 ---
 
-## Next Session: Phase 4 Tasks
+## Session 5: 2026-01-17 — Phase 4 Complete
 
-Phase 4 focuses on the QA Agent. Key tasks:
+### Summary
 
-1. **4.1** Create game testing skill (`skills/game-testing/SKILL.md`)
-   - Playwright setup for browser testing
-   - Common game test patterns
-   - Screenshot comparison
+Implemented all 4 tasks for Phase 4 QA Agent in a single PR (#10).
 
-2. **4.2** Implement QAAgent (`src/game_workflow/agents/qa.py`)
-   - Run automated test suite
-   - Perform smoke tests (game loads, no console errors)
-   - Generate QA report
-   - Suggest fixes for found issues
+### Key Implementation Decisions
 
-3. **4.3** Implement automated smoke tests
-   - Playwright-based browser tests
-   - Check game loads, no JS errors, basic interactions
+**Game Testing Skill (4.1):**
+- Comprehensive ~1600 line guide for Playwright-based game testing
+- Covers smoke tests, functional tests, visual regression, performance
+- Console error detection with ignore patterns
+- Input simulation utilities for keyboard/mouse
+- Canvas inspection for pixel-level verification
+- CI/CD integration with GitHub Actions example
 
-4. **4.4** Write unit tests for QAAgent
+**QAAgent (4.2):**
+- `DevServerManager` class to start/stop npm dev server for testing
+- `PlaywrightTester` class for browser-based tests
+- Uses try/except for optional playwright import (graceful degradation)
+- 6 smoke tests: page_loads, canvas_present, no_javascript_errors, game_initializes, no_console_errors, input_response
+- 2 performance tests: performance_fps, performance_load_time
+- `QAReport` dataclass with JSON and Markdown export
+- Recommendations engine based on test results and thresholds
+- Critical failures raise `QAFailedError`
 
-### Key Considerations for Phase 4
+**Smoke Tests (4.3):**
+- Each test returns `TestResult` with status, duration, message, details, severity
+- `TestStatus` enum: PASSED, FAILED, SKIPPED, ERROR
+- `TestSeverity` enum: CRITICAL, HIGH, MEDIUM, LOW, INFO
+- Console messages filtered with `IGNORE_PATTERNS` ClassVar
 
-- Playwright will be used for browser automation
-- Need to start a dev server to test the game
-- Console error detection via Playwright
-- May want screenshot capture for visual testing
-- QA report should be structured (JSON) for later processing
+**Tests (4.4):**
+- 49 unit tests for QAAgent
+- TestResult, ConsoleMessage, QAReport dataclass tests
+- DevServerManager, PlaywrightTester class tests
+- QAAgent evaluation and recommendation logic tests
+
+### Issues Encountered & Solutions
+
+1. **Playwright as optional dependency:**
+   - Playwright may not be installed in all environments
+   - Solution: Import inside functions with try/except, return SKIPPED status if not available
+
+2. **Mypy import-not-found for optional deps:**
+   - Inline `# type: ignore[import-not-found]` was marked as unused
+   - Solution: Added `[mypy-playwright.*] ignore_missing_imports = true` to mypy.ini
+
+3. **Unicode emoji in code:**
+   - Ruff RUF001 warned about ambiguous unicode character `ℹ`
+   - Solution: Changed to text-based indicators `[!]`, `[H]`, `[M]`, `[L]`, `[i]`
+
+4. **ClassVar type annotation:**
+   - Ruff RUF012 requires mutable class attributes to use `ClassVar`
+   - Solution: Added `ClassVar[list[str]]` annotation to `IGNORE_PATTERNS`
+
+5. **Unused method arguments:**
+   - `gdd_path` parameter in `run()` is reserved for future use
+   - Solution: Added `# noqa: ARG002` comment
+
+### Files Modified in Phase 4
+
+```
+mypy.ini                     (+3 lines) - playwright ignore
+
+pyproject.toml               (+4 lines) - optional qa dependencies
+
+skills/game-testing/SKILL.md (rewritten) - ~1600 lines comprehensive guide
+                             - Playwright setup, fixtures
+                             - Smoke, functional, visual, performance tests
+                             - Console detection, input simulation
+                             - Canvas inspection, CI/CD integration
+
+src/game_workflow/agents/qa.py (+900 lines) - full QAAgent implementation
+                               - TestStatus, TestSeverity enums
+                               - TestResult, ConsoleMessage, QAReport dataclasses
+                               - DevServerManager for dev server lifecycle
+                               - PlaywrightTester for browser tests
+                               - QAAgent with smoke tests, performance, recommendations
+
+tests/unit/test_qa_agent.py  (new, 789 lines) - 49 tests
+```
+
+### Test Coverage
+
+- 158 unit tests total (49 new for QA Agent)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 5 Tasks
+
+Phase 5 focuses on the Publish Agent. Key tasks:
+
+1. **5.1** Create itch.io page template (`templates/itchio-page.md`)
+   - Store page description structure
+   - Screenshot requirements
+   - Tag recommendations
+
+2. **5.2** Implement PublishAgent (`src/game_workflow/agents/publish.py`)
+   - Generate marketing copy from GDD
+   - Prepare store page content
+   - Create release tag on GitHub
+   - Prepare build artifacts
+
+3. **5.3** Write unit tests for PublishAgent
+
+### Key Considerations for Phase 5
+
+- Need to generate compelling marketing copy from GDD
+- Screenshots may need to be captured during QA phase
+- GitHub release creation requires API integration
+- Build artifacts need to be packaged for itch.io upload
+- May want to generate cover images/banners
 
 ---
 
