@@ -20,7 +20,7 @@
 | 6 | MCP Servers | ✅ Complete | #13 | #14 |
 | 7 | Skills | ✅ Complete | #15 | #16 |
 | 8 | Integration & Testing | ✅ Complete | #17, #19, #21, #23, #25 | #18, #20, #22, #24, #26 |
-| 9 | Documentation & Polish | ⬜ Not Started | — | — |
+| 9 | Documentation & Polish | 🟡 In Progress | #27 | #28 |
 
 **Legend**: ⬜ Not Started | 🟡 In Progress | ✅ Complete | 🔴 Blocked
 
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 8 — Integration & Testing (Complete!)
-**Working On**: Phase 8 complete, ready for Phase 9
+**Phase**: 9 — Documentation & Polish
+**Working On**: Tasks 9.1, 9.2, 9.3 completed, ready for 9.4-9.7
 **Blockers**: None
-**Next Action**: Documentation (Phase 9)
+**Next Action**: Skills documentation (Task 9.4)
 
 ---
 
@@ -628,23 +628,38 @@ Final documentation and release preparation.
 
 ### Tasks
 
-- [ ] **9.1** Write setup documentation (`docs/setup.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Step-by-step setup guide
+- [x] **9.1** Write setup documentation (`docs/setup.md`)
+  - Issue: #27
+  - PR: #28
+  - Merged: 2026-01-18
+  - Notes:
+    - Prerequisites (Python 3.11+, Node.js 18+, etc.)
+    - Installation steps (pip install, dev dependencies)
+    - Initial configuration (environment variables, config file)
+    - Optional setup (butler, Slack app, GitHub, Node.js, Godot)
+    - Troubleshooting section
 
-- [ ] **9.2** Write configuration reference (`docs/configuration.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: All config options documented
+- [x] **9.2** Write configuration reference (`docs/configuration.md`)
+  - Issue: #27
+  - PR: #28
+  - Merged: 2026-01-18
+  - Notes:
+    - Complete environment variables reference
+    - TOML config file format and examples
+    - Configuration classes and properties
+    - Validation rules for inputs
+    - Environment-specific configuration examples
 
-- [ ] **9.3** Write MCP server documentation (`docs/mcp-servers.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: How to use and extend MCP servers
+- [x] **9.3** Write MCP server documentation (`docs/mcp-servers.md`)
+  - Issue: #27
+  - PR: #28
+  - Merged: 2026-01-18
+  - Notes:
+    - MCP Server Registry overview and usage
+    - itch.io MCP server tools documentation
+    - Butler CLI wrapper documentation
+    - itch.io API client documentation
+    - Security considerations
 
 - [ ] **9.4** Write skills documentation (`docs/skills.md`)
   - Issue: #_pending_
@@ -686,6 +701,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Tasks 9.1, 9.2, 9.3 completed | PR #28 merged with setup, configuration, and MCP server documentation |
 | 2026-01-18 | Phase 8 completed | PR #26 merged with security audit (input validation, 41 security tests) |
 | 2026-01-18 | Task 8.4 completed | PR #24 merged with performance infrastructure (PerformanceHook, metrics dataclasses, 40 tests) |
 | 2026-01-18 | Task 8.3 completed | PR #22 merged with 23 E2E tests (full workflow, artifacts, state persistence, CLI, approval gates) |
