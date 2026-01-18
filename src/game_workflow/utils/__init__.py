@@ -15,9 +15,20 @@ from game_workflow.utils.subprocess import (
     run_subprocess,
 )
 from game_workflow.utils.templates import load_template
-from game_workflow.utils.validation import validate_engine, validate_prompt
+from game_workflow.utils.validation import (
+    ALLOWED_CHANNELS,
+    validate_channel,
+    validate_directory_path,
+    validate_engine,
+    validate_itchio_target,
+    validate_path_safety,
+    validate_prompt,
+    validate_state_id,
+    validate_version,
+)
 
 __all__ = [
+    "ALLOWED_CHANNELS",
     "ClaudeCodeRunner",
     "ProcessResult",
     "SubprocessConfig",
@@ -25,6 +36,12 @@ __all__ = [
     "load_template",
     "run_npm_command",
     "run_subprocess",
+    "validate_channel",
+    "validate_directory_path",
     "validate_engine",
+    "validate_itchio_target",
+    "validate_path_safety",
     "validate_prompt",
+    "validate_state_id",
+    "validate_version",
 ]

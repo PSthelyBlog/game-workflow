@@ -10,7 +10,6 @@ import asyncio
 import json
 import logging
 import os
-from pathlib import Path
 from typing import Any
 
 from mcp.server import Server
@@ -24,6 +23,7 @@ from pydantic import BaseModel, Field
 
 from game_workflow.mcp_servers.itchio.api import ItchioAPI
 from game_workflow.mcp_servers.itchio.butler import ButlerCLI
+from game_workflow.utils.validation import validate_path_safety
 
 logger = logging.getLogger(__name__)
 
@@ -187,12 +187,12 @@ async def _upload_game(arguments: dict[str, Any]) -> CallToolResult:
             isError=True,
         )
 
-    directory = Path(params.directory)
-
-    # Validate directory
-    if not directory.exists():
+    # Validate directory path for security (prevents path traversal attacks)
+    try:
+        directory = validate_path_safety(params.directory, must_exist=True)
+    except (ValueError, FileNotFoundError) as e:
         return CallToolResult(
-            content=_create_error_response(f"Directory does not exist: {directory}"),
+            content=_create_error_response(f"Invalid directory: {e}"),
             isError=True,
         )
 

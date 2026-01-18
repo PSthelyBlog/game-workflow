@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 from game_workflow.config import get_settings
 from game_workflow.orchestrator.exceptions import InvalidTransitionError, StateNotFoundError
+from game_workflow.utils.validation import validate_state_id
 
 
 class WorkflowPhase(str, Enum):
@@ -219,7 +220,11 @@ class WorkflowState(BaseModel):
 
         Raises:
             StateNotFoundError: If the state file doesn't exist.
+            ValueError: If the state_id contains invalid characters.
         """
+        # Validate state_id to prevent path traversal attacks
+        validate_state_id(state_id)
+
         settings = get_settings()
         state_file = settings.workflow.state_dir / f"{state_id}.json"
 
@@ -279,7 +284,13 @@ class WorkflowState(BaseModel):
 
         Returns:
             True if deleted, False if not found.
+
+        Raises:
+            ValueError: If the state_id contains invalid characters.
         """
+        # Validate state_id to prevent path traversal attacks
+        validate_state_id(state_id)
+
         settings = get_settings()
         state_file = settings.workflow.state_dir / f"{state_id}.json"
 
