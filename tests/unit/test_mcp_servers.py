@@ -315,9 +315,7 @@ class TestButlerCLI:
 
     @patch("platform.system")
     @patch("platform.machine")
-    def test_get_platform_key_linux(
-        self, mock_machine: MagicMock, mock_system: MagicMock
-    ) -> None:
+    def test_get_platform_key_linux(self, mock_machine: MagicMock, mock_system: MagicMock) -> None:
         """Test platform key for Linux."""
         mock_system.return_value = "Linux"
         mock_machine.return_value = "x86_64"
@@ -393,11 +391,13 @@ class TestItchioGame:
 
     def test_from_dict_minimal(self) -> None:
         """Test creating game from minimal dict."""
-        game = ItchioGame.from_dict({
-            "id": 12345,
-            "url": "https://user.itch.io/game",
-            "title": "My Game",
-        })
+        game = ItchioGame.from_dict(
+            {
+                "id": 12345,
+                "url": "https://user.itch.io/game",
+                "title": "My Game",
+            }
+        )
         assert game.id == 12345
         assert game.url == "https://user.itch.io/game"
         assert game.title == "My Game"
@@ -406,17 +406,19 @@ class TestItchioGame:
 
     def test_from_dict_full(self) -> None:
         """Test creating game from full dict."""
-        game = ItchioGame.from_dict({
-            "id": 12345,
-            "url": "https://user.itch.io/game",
-            "title": "My Game",
-            "short_text": "A great game",
-            "type": "html",
-            "classification": "tool",
-            "downloads_count": 100,
-            "views_count": 1000,
-            "p_windows": True,
-        })
+        game = ItchioGame.from_dict(
+            {
+                "id": 12345,
+                "url": "https://user.itch.io/game",
+                "title": "My Game",
+                "short_text": "A great game",
+                "type": "html",
+                "classification": "tool",
+                "downloads_count": 100,
+                "views_count": 1000,
+                "p_windows": True,
+            }
+        )
         assert game.short_text == "A great game"
         assert game.type == GameType.HTML
         assert game.classification == GameClassification.TOOL
@@ -426,12 +428,14 @@ class TestItchioGame:
 
     def test_from_dict_unknown_type(self) -> None:
         """Test creating game with unknown type falls back to default."""
-        game = ItchioGame.from_dict({
-            "id": 12345,
-            "url": "https://user.itch.io/game",
-            "title": "My Game",
-            "type": "unknown_type",
-        })
+        game = ItchioGame.from_dict(
+            {
+                "id": 12345,
+                "url": "https://user.itch.io/game",
+                "title": "My Game",
+                "type": "unknown_type",
+            }
+        )
         assert game.type == GameType.DEFAULT
 
 
@@ -440,13 +444,15 @@ class TestItchioUpload:
 
     def test_from_dict(self) -> None:
         """Test creating upload from dict."""
-        upload = ItchioUpload.from_dict({
-            "id": 1,
-            "game_id": 12345,
-            "filename": "game.zip",
-            "size": 1024000,
-            "channel_name": "html5",
-        })
+        upload = ItchioUpload.from_dict(
+            {
+                "id": 1,
+                "game_id": 12345,
+                "filename": "game.zip",
+                "size": 1024000,
+                "channel_name": "html5",
+            }
+        )
         assert upload.id == 1
         assert upload.game_id == 12345
         assert upload.filename == "game.zip"
@@ -459,13 +465,15 @@ class TestItchioUser:
 
     def test_from_dict(self) -> None:
         """Test creating user from dict."""
-        user = ItchioUser.from_dict({
-            "id": 123,
-            "username": "testuser",
-            "url": "https://testuser.itch.io",
-            "display_name": "Test User",
-            "developer": True,
-        })
+        user = ItchioUser.from_dict(
+            {
+                "id": 123,
+                "username": "testuser",
+                "url": "https://testuser.itch.io",
+                "display_name": "Test User",
+                "developer": True,
+            }
+        )
         assert user.id == 123
         assert user.username == "testuser"
         assert user.url == "https://testuser.itch.io"

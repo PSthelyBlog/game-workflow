@@ -279,7 +279,9 @@ class ButlerCLI:
 
             # Make executable on Unix
             if platform.system() != "Windows":
-                butler_path.chmod(butler_path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+                butler_path.chmod(
+                    butler_path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                )
 
             # Update our path
             self.butler_path = butler_path
@@ -483,7 +485,8 @@ class ButlerCLI:
                 return ButlerStatusResult(
                     success=False,
                     target=target,
-                    error=result.stderr or f"butler status failed with exit code {result.returncode}",
+                    error=result.stderr
+                    or f"butler status failed with exit code {result.returncode}",
                     output=result.stdout,
                 )
 

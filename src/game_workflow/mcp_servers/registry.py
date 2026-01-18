@@ -165,10 +165,7 @@ class MCPServerRegistry:
         Returns:
             List of running server names.
         """
-        return [
-            name for name, proc in self._processes.items()
-            if proc.is_running
-        ]
+        return [name for name, proc in self._processes.items() if proc.is_running]
 
     def is_running(self, name: str) -> bool:
         """Check if a server is running.
@@ -275,9 +272,7 @@ class MCPServerRegistry:
                     stderr = ""
                     if process.stderr:
                         stderr = process.stderr.read().decode("utf-8", errors="replace")
-                    raise RuntimeError(
-                        f"Server '{name}' exited immediately: {stderr}"
-                    )
+                    raise RuntimeError(f"Server '{name}' exited immediately: {stderr}")
 
                 if wait_healthy:
                     startup_timeout = timeout or config.startup_timeout
@@ -329,9 +324,7 @@ class MCPServerRegistry:
                 # Wait for graceful shutdown
                 try:
                     await asyncio.wait_for(
-                        asyncio.get_event_loop().run_in_executor(
-                            None, process.wait
-                        ),
+                        asyncio.get_event_loop().run_in_executor(None, process.wait),
                         timeout=timeout,
                     )
                 except TimeoutError:
@@ -370,9 +363,7 @@ class MCPServerRegistry:
             The new server process info.
         """
         await self.stop_server(name, timeout=stop_timeout)
-        return await self.start_server(
-            name, wait_healthy=wait_healthy, timeout=start_timeout
-        )
+        return await self.start_server(name, wait_healthy=wait_healthy, timeout=start_timeout)
 
     async def stop_all(self, *, timeout: float = 10.0) -> None:
         """Stop all running servers.
@@ -423,8 +414,8 @@ class MCPServerRegistry:
         # while True:
         #     elapsed = asyncio.get_event_loop().time() - start_time
         #     if elapsed >= timeout:
-            #     raise RuntimeError(f"Server '{name}' did not become healthy")
-            # await asyncio.sleep(0.5)
+        #     raise RuntimeError(f"Server '{name}' did not become healthy")
+        # await asyncio.sleep(0.5)
 
     def _start_health_check(self, name: str) -> None:
         """Start periodic health check for a server.
@@ -497,7 +488,4 @@ class MCPServerRegistry:
         Returns:
             Dictionary mapping server names to stats.
         """
-        return {
-            name: self.get_server_stats(name)
-            for name in self._servers
-        }
+        return {name: self.get_server_stats(name) for name in self._servers}

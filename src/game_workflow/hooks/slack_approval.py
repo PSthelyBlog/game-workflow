@@ -301,7 +301,12 @@ class SlackApprovalHook:
     """
 
     # Default reaction emojis for approval/rejection
-    APPROVE_REACTIONS: ClassVar[set[str]] = {"white_check_mark", "heavy_check_mark", "+1", "thumbsup"}
+    APPROVE_REACTIONS: ClassVar[set[str]] = {
+        "white_check_mark",
+        "heavy_check_mark",
+        "+1",
+        "thumbsup",
+    }
     REJECT_REACTIONS: ClassVar[set[str]] = {"x", "no_entry", "-1", "thumbsdown"}
 
     def __init__(
@@ -362,16 +367,16 @@ class SlackApprovalHook:
 
         # Add context if provided
         if context:
-            context_text = "\n".join(
-                f"*{k}:* {v}" for k, v in context.items()
+            context_text = "\n".join(f"*{k}:* {v}" for k, v in context.items())
+            blocks.append(
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": context_text,
+                    },
+                }
             )
-            blocks.append({
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": context_text,
-                },
-            })
 
         blocks.append({"type": "divider"})
 
@@ -387,26 +392,30 @@ class SlackApprovalHook:
                 "Alternatively, reply in thread with `approve` or `reject`."
             )
 
-        blocks.append({
-            "type": "context",
-            "elements": [
-                {
-                    "type": "mrkdwn",
-                    "text": instruction,
-                },
-            ],
-        })
-
-        if request_id:
-            blocks.append({
+        blocks.append(
+            {
                 "type": "context",
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": f"_Request ID: {request_id}_",
+                        "text": instruction,
                     },
                 ],
-            })
+            }
+        )
+
+        if request_id:
+            blocks.append(
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"_Request ID: {request_id}_",
+                        },
+                    ],
+                }
+            )
 
         return blocks
 
@@ -450,24 +459,28 @@ class SlackApprovalHook:
         ]
 
         if responder:
-            blocks.append({
-                "type": "context",
-                "elements": [
-                    {
-                        "type": "mrkdwn",
-                        "text": f"Responded by <@{responder}>",
-                    },
-                ],
-            })
+            blocks.append(
+                {
+                    "type": "context",
+                    "elements": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"Responded by <@{responder}>",
+                        },
+                    ],
+                }
+            )
 
         if feedback:
-            blocks.append({
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"*Feedback:* {feedback}",
-                },
-            })
+            blocks.append(
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*Feedback:* {feedback}",
+                    },
+                }
+            )
 
         return blocks
 
@@ -693,10 +706,12 @@ class SlackApprovalHook:
 
         if context:
             context_text = "\n".join(f"*{k}:* {v}" for k, v in context.items())
-            blocks.append({
-                "type": "context",
-                "elements": [{"type": "mrkdwn", "text": context_text}],
-            })
+            blocks.append(
+                {
+                    "type": "context",
+                    "elements": [{"type": "mrkdwn", "text": context_text}],
+                }
+            )
 
         try:
             async with SlackClient(token=self.token) as client:

@@ -381,7 +381,9 @@ class ItchioAPI:
                 # Check for rate limiting
                 if response.status_code == 429:
                     if attempt < self.max_retries - 1:
-                        retry_after = int(response.headers.get("Retry-After", self.retry_delay * (attempt + 1)))
+                        retry_after = int(
+                            response.headers.get("Retry-After", self.retry_delay * (attempt + 1))
+                        )
                         logger.warning("Rate limited, retrying in %d seconds", retry_after)
                         await asyncio.sleep(retry_after)
                         continue
@@ -395,7 +397,9 @@ class ItchioAPI:
                 if response.status_code >= 500:
                     if attempt < self.max_retries - 1:
                         delay = self.retry_delay * (attempt + 1)
-                        logger.warning("Server error %d, retrying in %f seconds", response.status_code, delay)
+                        logger.warning(
+                            "Server error %d, retrying in %f seconds", response.status_code, delay
+                        )
                         await asyncio.sleep(delay)
                         continue
                     else:

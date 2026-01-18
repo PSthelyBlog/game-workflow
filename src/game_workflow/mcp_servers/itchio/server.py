@@ -36,7 +36,9 @@ class UploadGameParams(BaseModel):
 
     directory: str = Field(description="Path to the directory containing the game build")
     target: str = Field(description="itch.io target in format 'username/game-name'")
-    channel: str = Field(default="html5", description="Release channel (e.g., html5, windows, linux)")
+    channel: str = Field(
+        default="html5", description="Release channel (e.g., html5, windows, linux)"
+    )
     version: str | None = Field(default=None, description="Version string for this upload")
     dry_run: bool = Field(default=False, description="If true, validate but don't actually upload")
 
@@ -47,7 +49,9 @@ class UpdateGamePageParams(BaseModel):
     target: str = Field(description="itch.io target in format 'username/game-name'")
     title: str | None = Field(default=None, description="New game title")
     short_description: str | None = Field(default=None, description="Short description (tagline)")
-    description: str | None = Field(default=None, description="Full game description (HTML or Markdown)")
+    description: str | None = Field(
+        default=None, description="Full game description (HTML or Markdown)"
+    )
 
 
 class PublishGameParams(BaseModel):
@@ -111,7 +115,7 @@ async def list_tools() -> list[Tool]:
         Tool(
             name="upload_game",
             description="Upload a game build to itch.io using butler. "
-                       "Requires a built game directory and an itch.io target (username/game-name).",
+            "Requires a built game directory and an itch.io target (username/game-name).",
             inputSchema=UploadGameParams.model_json_schema(),
         ),
         Tool(
@@ -229,14 +233,16 @@ async def _upload_game(arguments: dict[str, Any]) -> CallToolResult:
 
     if result.success:
         return CallToolResult(
-            content=_create_success_response({
-                "target": result.target,
-                "channel": result.channel,
-                "version": result.version,
-                "build_id": result.build_id,
-                "dry_run": params.dry_run,
-                "message": f"Successfully uploaded to {result.target}:{result.channel}",
-            }),
+            content=_create_success_response(
+                {
+                    "target": result.target,
+                    "channel": result.channel,
+                    "version": result.version,
+                    "build_id": result.build_id,
+                    "dry_run": params.dry_run,
+                    "message": f"Successfully uploaded to {result.target}:{result.channel}",
+                }
+            ),
         )
     else:
         return CallToolResult(
@@ -279,10 +285,12 @@ async def _get_game_status(arguments: dict[str, Any]) -> CallToolResult:
 
     if result.success:
         return CallToolResult(
-            content=_create_success_response({
-                "target": result.target,
-                "channels": result.channels,
-            }),
+            content=_create_success_response(
+                {
+                    "target": result.target,
+                    "channels": result.channels,
+                }
+            ),
         )
     else:
         return CallToolResult(
@@ -314,21 +322,25 @@ async def _get_my_games(
 
         games_data = []
         for game in games:
-            games_data.append({
-                "id": game.id,
-                "title": game.title,
-                "url": game.url,
-                "short_text": game.short_text,
-                "classification": game.classification.value,
-                "downloads_count": game.downloads_count,
-                "views_count": game.views_count,
-            })
+            games_data.append(
+                {
+                    "id": game.id,
+                    "title": game.title,
+                    "url": game.url,
+                    "short_text": game.short_text,
+                    "classification": game.classification.value,
+                    "downloads_count": game.downloads_count,
+                    "views_count": game.views_count,
+                }
+            )
 
         return CallToolResult(
-            content=_create_success_response({
-                "games": games_data,
-                "count": len(games_data),
-            }),
+            content=_create_success_response(
+                {
+                    "games": games_data,
+                    "count": len(games_data),
+                }
+            ),
         )
 
 
@@ -368,21 +380,23 @@ async def _check_credentials(
 
         if user:
             return CallToolResult(
-                content=_create_success_response({
-                    "api_valid": True,
-                    "user": {
-                        "id": user.id,
-                        "username": user.username,
-                        "display_name": user.display_name,
-                        "url": user.url,
-                        "developer": user.developer,
-                    },
-                    "butler": {
-                        "installed": butler_installed,
-                        "version": butler_version,
-                        "logged_in": butler_logged_in,
-                    },
-                }),
+                content=_create_success_response(
+                    {
+                        "api_valid": True,
+                        "user": {
+                            "id": user.id,
+                            "username": user.username,
+                            "display_name": user.display_name,
+                            "url": user.url,
+                            "developer": user.developer,
+                        },
+                        "butler": {
+                            "installed": butler_installed,
+                            "version": butler_version,
+                            "logged_in": butler_logged_in,
+                        },
+                    }
+                ),
             )
         else:
             return CallToolResult(
