@@ -10,8 +10,6 @@ import logging
 from typing import TYPE_CHECKING, Any, Protocol
 
 from game_workflow.config import get_settings
-from game_workflow.hooks.checkpoint import CheckpointHook
-from game_workflow.hooks.logging import LoggingHook
 from game_workflow.orchestrator.exceptions import WorkflowError
 from game_workflow.orchestrator.state import WorkflowPhase, WorkflowState
 
@@ -92,6 +90,10 @@ class Workflow:
 
     def _setup_default_hooks(self) -> None:
         """Set up the default workflow hooks."""
+        # Import here to avoid circular imports
+        from game_workflow.hooks.checkpoint import CheckpointHook
+        from game_workflow.hooks.logging import LoggingHook
+
         settings = get_settings()
 
         # Add logging hook
