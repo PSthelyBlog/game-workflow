@@ -29,9 +29,9 @@
 ## Current Status
 
 **Phase**: 8 — Integration & Testing
-**Working On**: Task 8.3 complete, ready for 8.4
+**Working On**: Task 8.4 complete, ready for 8.5
 **Blockers**: None
-**Next Action**: Performance testing (8.4)
+**Next Action**: Security audit (8.5)
 
 ---
 
@@ -592,14 +592,16 @@ End-to-end integration and comprehensive testing.
     - Error handling and approval gate tests
     - Added py.typed marker for mypy
 
-- [ ] **8.4** Performance testing and optimization
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **8.4** Performance testing and optimization
+  - Issue: #23
+  - PR: #24
+  - Merged: 2026-01-18
   - Notes:
-    - Measure workflow duration
-    - Identify bottlenecks
-    - Optimize API calls
+    - Added PerformanceHook for collecting workflow metrics
+    - Added PerformanceMetrics, PhaseMetrics, TimingRecord dataclasses
+    - Added Timer context manager and timed_operation helper
+    - Added lru_cache to JSON schema generation functions
+    - 40 new unit tests for performance tracking
 
 - [ ] **8.5** Security audit
   - Issue: #_pending_
@@ -682,6 +684,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Task 8.4 completed | PR #24 merged with performance infrastructure (PerformanceHook, metrics dataclasses, 40 tests) |
 | 2026-01-18 | Task 8.3 completed | PR #22 merged with 23 E2E tests (full workflow, artifacts, state persistence, CLI, approval gates) |
 | 2026-01-18 | Task 8.2 completed | PR #20 merged with 61 integration tests (external services, approval flows, error scenarios) |
 | 2026-01-18 | Task 8.1 completed | PR #18 merged with full workflow integration (all agents wired, approval hooks, error recovery) |

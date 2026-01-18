@@ -1132,20 +1132,119 @@ src/game_workflow/
 
 ---
 
-## Next Session: Task 8.4
+## Session 12: 2026-01-18 — Task 8.4 Complete
 
-Task 8.4 focuses on performance testing:
+### Summary
 
-1. Measure workflow duration
-2. Identify bottlenecks
-3. Optimize API calls
+Implemented Task 8.4 (performance testing) in PR #24. Added comprehensive performance metrics infrastructure.
+
+### Key Implementation Decisions
+
+**Performance Metrics Infrastructure:**
+- `TimingRecord` dataclass for individual timed operations
+- `PhaseMetrics` dataclass for per-phase metrics (duration, API calls, state saves, errors, retries)
+- `PerformanceMetrics` dataclass for complete workflow metrics with summary generation
+- `Timer` context manager for timing operations with metadata support
+- `timed_operation` convenience context manager
+
+**PerformanceHook:**
+- Implements `WorkflowHook` protocol for automatic phase tracking
+- Records phase start/end times and calculates durations
+- Tracks API call counts and durations per phase
+- Tracks state save operations per phase
+- Records errors and retries per phase
+- Supports custom timing records for detailed profiling
+- Generates human-readable performance reports
+- Saves metrics to JSON files
+
+**Caching Optimizations:**
+- Added `@lru_cache(maxsize=1)` to JSON schema generation functions in `schemas.py`:
+  - `get_concept_schema()`
+  - `get_gdd_schema()`
+  - `get_tech_spec_schema()`
+  - `get_design_output_schema()`
+- Updated `DesignAgent` to use cached schema functions
+- Note: `get_settings()` was already cached with `@lru_cache`
+
+### Files Created/Modified
+
+```
+src/game_workflow/hooks/
+├── __init__.py          (+15 lines) - export performance classes
+└── performance.py       (new, 512 lines) - complete performance infrastructure
+    - TimingRecord, PhaseMetrics, PerformanceMetrics dataclasses
+    - Timer class and timed_operation context manager
+    - PerformanceHook class implementing WorkflowHook protocol
+
+src/game_workflow/agents/
+├── schemas.py           (+6 lines) - lru_cache on schema functions
+└── design.py            (+3 lines) - use cached schema imports
+
+tests/unit/
+└── test_performance.py  (new, 652 lines) - 40 tests
+    - TestTimingRecord (3 tests)
+    - TestPhaseMetrics (5 tests)
+    - TestPerformanceMetrics (8 tests)
+    - TestTimer (4 tests)
+    - TestTimedOperation (3 tests)
+    - TestPerformanceHook (14 tests)
+    - TestPerformanceIntegration (3 tests)
+```
+
+### Test Coverage
+
+- 337 tests total (40 new for performance)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+### Performance Hook Usage Example
+
+```python
+from game_workflow.hooks.performance import PerformanceHook, timed_operation
+
+# Create hook
+hook = PerformanceHook(workflow_id="my_workflow")
+
+# Track phases (automatic via WorkflowHook protocol)
+await hook.on_phase_start("design")
+# ... do work ...
+await hook.on_phase_complete("design")
+
+# Record API calls
+hook.record_api_call(150.0)  # 150ms
+
+# Record state saves
+hook.record_state_save(25.0)  # 25ms
+
+# Custom timing
+with timed_operation("custom_operation") as timer:
+    # ... do work ...
+    timer.add_metadata("extra_info", "value")
+hook.add_timing(timer.to_record())
+
+# Get results
+metrics = hook.complete()
+print(metrics.generate_report())
+metrics.save(Path("metrics.json"))
+```
+
+---
+
+## Next Session: Task 8.5
+
+Task 8.5 focuses on security audit:
+
+1. Review credential handling
+2. Check for injection vulnerabilities
+3. Validate input sanitization
 
 ### Key Considerations
 
-- Profile agent execution times
-- Consider caching for repeated API calls
-- Test with larger game prompts
-- May need to add timing instrumentation to workflow
+- Review all places where API keys are used
+- Check subprocess calls for command injection
+- Validate user inputs in prompts
+- Review file path handling for path traversal
+- Check for secrets in state files/logs
 
 ---
 
