@@ -29,9 +29,9 @@
 ## Current Status
 
 **Phase**: 8 — Integration & Testing
-**Working On**: Task 8.2 complete, ready for 8.3
+**Working On**: Task 8.3 complete, ready for 8.4
 **Blockers**: None
-**Next Action**: Write E2E tests (8.3)
+**Next Action**: Performance testing (8.4)
 
 ---
 
@@ -579,14 +579,18 @@ End-to-end integration and comprehensive testing.
     - test_approval_flows.py (16 tests): approve, reject, timeout, selective
     - test_error_scenarios.py (24 tests): agent failures, API errors, retries
 
-- [ ] **8.3** Write E2E tests
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **8.3** Write E2E tests
+  - Issue: #21
+  - PR: #22
+  - Merged: 2026-01-18
   - Notes:
-    - Full workflow with test itch.io project
-    - Automated approvals for CI
-    - Verify all artifacts
+    - 23 E2E tests for full workflow execution
+    - Mock-based testing with auto-approve mode
+    - Artifact verification (design, build, QA, publish)
+    - State persistence and resume tests
+    - CLI integration tests
+    - Error handling and approval gate tests
+    - Added py.typed marker for mypy
 
 - [ ] **8.4** Performance testing and optimization
   - Issue: #_pending_
@@ -678,6 +682,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Task 8.3 completed | PR #22 merged with 23 E2E tests (full workflow, artifacts, state persistence, CLI, approval gates) |
 | 2026-01-18 | Task 8.2 completed | PR #20 merged with 61 integration tests (external services, approval flows, error scenarios) |
 | 2026-01-18 | Task 8.1 completed | PR #18 merged with full workflow integration (all agents wired, approval hooks, error recovery) |
 | 2026-01-18 | Phase 7 completed | PR #16 merged with Skills (Phaser enhanced, Godot skill+scaffold, Testing enhanced) |
