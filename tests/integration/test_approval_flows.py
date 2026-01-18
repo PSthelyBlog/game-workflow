@@ -16,7 +16,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 
 from game_workflow.orchestrator import Workflow, WorkflowPhase
-from game_workflow.orchestrator.exceptions import ApprovalRejectedError
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -9,7 +9,6 @@ These tests verify error handling in the workflow:
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, MagicMock
 
@@ -18,11 +17,8 @@ import pytest
 from game_workflow.orchestrator import Workflow, WorkflowPhase
 from game_workflow.orchestrator.exceptions import (
     AgentError,
-    ApprovalRejectedError,
     BuildFailedError,
-    ConfigurationError,
     QAFailedError,
-    WorkflowError,
 )
 
 if TYPE_CHECKING:
@@ -946,7 +942,7 @@ class TestStatePersistenceAfterError:
         monkeypatch.setenv("GAME_WORKFLOW_STATE_DIR", str(tmp_path))
         monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
 
-        from game_workflow.config import reload_settings, get_settings
+        from game_workflow.config import get_settings, reload_settings
 
         reload_settings()
 
@@ -1034,17 +1030,17 @@ class TestHookErrors:
             """Hook that always fails."""
 
             async def on_phase_start(
-                self, phase: str, context: dict[str, Any] | None = None
+                self, _phase: str, _context: dict[str, Any] | None = None
             ) -> None:
                 raise RuntimeError("Hook failed!")
 
             async def on_phase_complete(
-                self, phase: str, result: dict[str, Any] | None = None
+                self, _phase: str, _result: dict[str, Any] | None = None
             ) -> None:
                 raise RuntimeError("Hook failed!")
 
             async def on_error(
-                self, error: Exception, context: dict[str, Any] | None = None
+                self, _error: Exception, _context: dict[str, Any] | None = None
             ) -> None:
                 raise RuntimeError("Hook failed!")
 
@@ -1091,18 +1087,18 @@ class TestHookErrors:
 
             async def request_approval(
                 self,
-                message: str,
-                context: dict[str, Any] | None = None,
-                timeout_minutes: int | None = None,
+                message: str,  # noqa: ARG002
+                context: dict[str, Any] | None = None,  # noqa: ARG002
+                timeout_minutes: int | None = None,  # noqa: ARG002
             ) -> bool:
                 return True
 
             async def send_notification(
                 self,
-                message: str,
+                message: str,  # noqa: ARG002
                 *,
-                context: dict[str, Any] | None = None,
-                level: str = "info",
+                context: dict[str, Any] | None = None,  # noqa: ARG002
+                level: str = "info",  # noqa: ARG002
             ) -> bool:
                 raise RuntimeError("Notification failed!")
 

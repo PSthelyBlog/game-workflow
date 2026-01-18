@@ -6,14 +6,12 @@ mocked external services: GitHub, Slack, and itch.io.
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
 from game_workflow.hooks.slack_approval import (
-    ApprovalRequest,
     ApprovalStatus,
     SlackApprovalHook,
     SlackClient,
@@ -24,11 +22,8 @@ from game_workflow.mcp_servers.itchio import (
     ButlerCLI,
     ButlerPushResult,
     ItchioAPI,
-    ItchioGame,
-    ItchioUser,
 )
-from game_workflow.orchestrator import Workflow, WorkflowPhase
-from game_workflow.orchestrator.exceptions import ApprovalRejectedError, ApprovalTimeoutError
+from game_workflow.orchestrator import Workflow
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -135,7 +130,7 @@ class TestSlackIntegration:
         """Test checking replies for approval."""
         hook = SlackApprovalHook(channel="#test-channel", token="test-token")
         replies = [{"text": "approve", "user": "U12345"}]
-        status, responder, feedback = hook._check_replies(replies)
+        status, responder, _feedback = hook._check_replies(replies)
         assert status == ApprovalStatus.APPROVED
         assert responder == "U12345"
 
@@ -327,7 +322,6 @@ class TestGitHubIntegration:
     @pytest.mark.asyncio
     async def test_create_release_metadata(
         self,
-        sample_prompt: str,
         tmp_path: Path,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -414,9 +408,9 @@ class TestWorkflowWithExternalServices:
 
             async def request_approval(
                 self,
-                message: str,
-                context: dict[str, Any] | None = None,
-                timeout_minutes: int | None = None,
+                message: str,  # noqa: ARG002
+                context: dict[str, Any] | None = None,  # noqa: ARG002
+                timeout_minutes: int | None = None,  # noqa: ARG002
             ) -> bool:
                 return True
 
@@ -505,11 +499,9 @@ class TestWorkflowWithExternalServices:
     @pytest.mark.asyncio
     async def test_workflow_with_itchio_publish(
         self,
-        sample_prompt: str,
         tmp_path: Path,
         monkeypatch: pytest.MonkeyPatch,
         mock_butler: MagicMock,
-        mock_itchio_api: MagicMock,
     ) -> None:
         """Test workflow publishes to itch.io correctly."""
         monkeypatch.setenv("GAME_WORKFLOW_STATE_DIR", str(tmp_path))
