@@ -132,6 +132,18 @@ def render_concept(concept_data: dict[str, Any]) -> str:
     return render_template("concept-template.md", concept_data)
 
 
+def render_itchio_page(page_data: dict[str, Any]) -> str:
+    """Render an itch.io store page from structured data.
+
+    Args:
+        page_data: Dictionary containing itch.io page fields.
+
+    Returns:
+        Rendered itch.io page as markdown string.
+    """
+    return render_template("itchio-page.md", page_data)
+
+
 def get_scaffold_path(engine: str) -> Path:
     """Get the path to a project scaffold.
 
