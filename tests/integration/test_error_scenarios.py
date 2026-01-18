@@ -64,11 +64,13 @@ class MockApprovalHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
         return True
 
     async def send_notification(
@@ -78,11 +80,13 @@ class MockApprovalHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 

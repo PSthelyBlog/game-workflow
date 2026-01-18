@@ -39,11 +39,13 @@ class AlwaysApproveHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
         return True
 
     async def send_notification(
@@ -53,11 +55,13 @@ class AlwaysApproveHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 
@@ -74,11 +78,13 @@ class AlwaysRejectHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
         return False
 
     async def send_notification(
@@ -88,11 +94,13 @@ class AlwaysRejectHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 
@@ -115,11 +123,13 @@ class SelectiveApprovalHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
 
         # Check against reject gates first
         for gate in self.reject_gates:
@@ -141,11 +151,13 @@ class SelectiveApprovalHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 
@@ -164,11 +176,13 @@ class TimeoutApprovalHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
         self.request_count += 1
 
         if self.request_count > self.timeout_after:
@@ -184,11 +198,13 @@ class TimeoutApprovalHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 
@@ -206,11 +222,13 @@ class DelayedApprovalHook:
         context: dict[str, Any] | None = None,
         timeout_minutes: int | None = None,
     ) -> bool:
-        self.requests.append({
-            "message": message,
-            "context": context,
-            "timeout_minutes": timeout_minutes,
-        })
+        self.requests.append(
+            {
+                "message": message,
+                "context": context,
+                "timeout_minutes": timeout_minutes,
+            }
+        )
         await asyncio.sleep(self.delay_seconds)
         return True
 
@@ -221,11 +239,13 @@ class DelayedApprovalHook:
         context: dict[str, Any] | None = None,
         level: str = "info",
     ) -> bool:
-        self.notifications.append({
-            "message": message,
-            "context": context,
-            "level": level,
-        })
+        self.notifications.append(
+            {
+                "message": message,
+                "context": context,
+                "level": level,
+            }
+        )
         return True
 
 

@@ -40,8 +40,6 @@ def sample_prompt() -> str:
     return "Create a simple puzzle game where players match colored blocks."
 
 
-
-
 @pytest.fixture
 def mock_itchio_api() -> MagicMock:
     """Create a mock itch.io API client."""
@@ -65,7 +63,9 @@ def mock_itchio_api() -> MagicMock:
     api.get_game = AsyncMock(
         return_value=APIResponse(
             success=True,
-            data={"game": {"id": 1, "title": "Test Game", "url": "https://testuser.itch.io/test-game"}},
+            data={
+                "game": {"id": 1, "title": "Test Game", "url": "https://testuser.itch.io/test-game"}
+            },
         )
     )
     return api
@@ -421,9 +421,7 @@ class TestWorkflowWithExternalServices:
                 context: dict[str, Any] | None = None,
                 level: str = "info",
             ) -> bool:
-                notifications.append(
-                    {"message": message, "context": context, "level": level}
-                )
+                notifications.append({"message": message, "context": context, "level": level})
                 return True
 
         # Create a mock GDD file
