@@ -1462,11 +1462,67 @@ README.md                 (+311 lines) - badges, diagrams, improved sections
 
 ---
 
-## Next Session: Task 9.7
+## Session 16: 2026-01-18 — Task 9.7 Complete (v0.1.0 RELEASED!)
 
-Remaining Phase 9 task:
+### Summary
 
-7. Create release v0.1.0 (Tag, changelog, GitHub release)
+Created the initial v0.1.0 release in PR #32.
+
+### Release Artifacts Created
+
+**CHANGELOG.md:**
+- Follows Keep a Changelog format (https://keepachangelog.com/)
+- Documents all additions across 9 phases
+- Categories: Core Infrastructure, Agents, MCP Servers, Skills, Scaffolds, Testing, Security, Documentation
+- Lists all dependencies (main, dev, optional)
+
+**Git Tag:**
+- `v0.1.0` tag created on main branch
+
+**GitHub Release:**
+- Title: "v0.1.0 - Initial Release"
+- Comprehensive release notes with highlights
+- Installation instructions
+- Quick start guide
+- Links to documentation
+- Requirements and what's next sections
+- URL: https://github.com/PSthelyBlog/game-workflow/releases/tag/v0.1.0
+
+### Commands Used
+
+```bash
+# Create tag and release in one command
+~/bin/gh release create v0.1.0 --title "v0.1.0 - Initial Release" --notes "..."
+```
+
+### Files Created
+
+```
+CHANGELOG.md              (new, 162 lines) - comprehensive changelog
+```
+
+### Project Complete!
+
+All 9 phases are now complete:
+
+| Phase | Description | PRs |
+|-------|-------------|-----|
+| 0 | Repository Setup | #2 |
+| 1 | Core Infrastructure | #4 |
+| 2 | Design Agent | #6 |
+| 3 | Build Agent | #8 |
+| 4 | QA Agent | #10 |
+| 5 | Publish Agent | #12 |
+| 6 | MCP Servers | #14 |
+| 7 | Skills | #16 |
+| 8 | Integration & Testing | #18, #20, #22, #24, #26 |
+| 9 | Documentation & Polish | #28, #30, #32 |
+
+**Total**: 16 PRs merged, 495+ tests, v0.1.0 released!
+
+---
+
+## Project Complete
 
 ---
 
