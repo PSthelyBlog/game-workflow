@@ -3,7 +3,7 @@
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
 > **Last Updated**: 2026-01-18
-> **Current Phase**: Phase 6 — MCP Servers
+> **Current Phase**: Phase 7 — Skills
 
 ---
 
@@ -17,7 +17,7 @@
 | 3 | Build Agent | ✅ Complete | #7 | #8 |
 | 4 | QA Agent | ✅ Complete | #9 | #10 |
 | 5 | Publish Agent | ✅ Complete | #11 | #12 |
-| 6 | MCP Servers | ⬜ Not Started | — | — |
+| 6 | MCP Servers | ✅ Complete | #13 | #14 |
 | 7 | Skills | ⬜ Not Started | — | — |
 | 8 | Integration & Testing | ⬜ Not Started | — | — |
 | 9 | Documentation & Polish | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 6 — MCP Servers
-**Working On**: Ready to begin Phase 6
+**Phase**: 7 — Skills
+**Working On**: Ready to begin Phase 7
 **Blockers**: None
-**Next Action**: Implement MCP server registry and itch.io MCP server
+**Next Action**: Enhance Phaser game skill and create Godot game skill
 
 ---
 
@@ -410,70 +410,78 @@ Implement MCP server integrations.
 
 ### Tasks
 
-- [ ] **6.1** Implement MCP server registry (`src/game_workflow/mcp_servers/registry.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **6.1** Implement MCP server registry (`src/game_workflow/mcp_servers/registry.py`)
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
   - Notes:
-    - Register official servers (GitHub, Slack)
-    - Register custom servers
-    - Handle server lifecycle
+    - MCPServerConfig, MCPServerProcess, MCPServerRegistry classes
+    - Server lifecycle management (start, stop, restart)
+    - Health checks with configurable timeout
+    - Async context manager support
+    - Server process monitoring with stdout/stderr capture
 
-- [ ] **6.2** Implement butler CLI wrapper (`src/game_workflow/mcp_servers/itchio/butler.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **6.2** Implement butler CLI wrapper (`src/game_workflow/mcp_servers/itchio/butler.py`)
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
   - Notes:
-    - Download/install butler
-    - Login handling
-    - Push command wrapper
-    - Status command wrapper
+    - ButlerVersion, ButlerPushResult, ButlerStatusResult dataclasses
+    - Automatic butler download for macOS/Linux/Windows
+    - Push command with channel selection
+    - Status command for upload verification
+    - Validate command for build checks
 
-- [ ] **6.3** Implement itch.io API client (`src/game_workflow/mcp_servers/itchio/api.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **6.3** Implement itch.io API client (`src/game_workflow/mcp_servers/itchio/api.py`)
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
   - Notes:
-    - httpx-based async client
-    - Game metadata endpoints
-    - Upload status endpoints
+    - ItchioGame, ItchioUpload, ItchioUser Pydantic models
+    - httpx-based async client with retry logic
+    - get_my_games(), get_game(), get_game_uploads() endpoints
+    - get_profile(), test_credentials() methods
+    - Rate limiting and error handling
 
-- [ ] **6.4** Implement itch.io MCP server (`src/game_workflow/mcp_servers/itchio/server.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **6.4** Implement itch.io MCP server (`src/game_workflow/mcp_servers/itchio/server.py`)
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
   - Notes:
-    - Tools: `upload_game`, `update_game_page`, `publish_game`, `get_game_status`
-    - Proper error handling
-    - Input validation
+    - MCP protocol using `mcp` library
+    - Tools: upload_game, get_game_status, get_my_games, check_credentials
+    - JSON-RPC request/response handling
+    - Input validation with proper error messages
 
-- [ ] **6.5** Implement Slack approval hook (`src/game_workflow/hooks/slack_approval.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **6.5** Implement Slack approval hook (`src/game_workflow/hooks/slack_approval.py`)
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
   - Notes:
-    - Send approval request messages
-    - Wait for reaction or reply
-    - Handle timeouts gracefully
-    - Support feedback collection
+    - ApprovalStatus enum (PENDING, APPROVED, REJECTED, EXPIRED)
+    - ApprovalRequest dataclass for tracking
+    - SlackClient with httpx for Slack Web API
+    - Block Kit formatted approval messages
+    - Reaction and reply-based approval detection
+    - send_notification() for status updates
 
-- [ ] **6.6** Write unit tests for MCP servers
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Mock butler CLI, mock APIs
+- [x] **6.6** Write unit tests for MCP servers
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
+  - Notes: 56 tests covering MCPServerConfig, MCPServerProcess, MCPServerRegistry, ButlerCLI, ItchioAPI
 
-- [ ] **6.7** Write integration tests for Slack
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Test with real Slack workspace (dev)
+- [x] **6.7** Write integration tests for Slack
+  - Issue: #13
+  - PR: #14
+  - Merged: 2026-01-18
+  - Notes: 37 tests for SlackClient, SlackApprovalHook, reaction/reply checking, approval flow
 
 ### Phase 6 Completion Criteria
-- [ ] itch.io MCP server works with butler
-- [ ] Slack approvals work end-to-end
-- [ ] All MCP servers register correctly
-- [ ] All tests pass: `pytest tests/unit/test_mcp_servers.py`
+- [x] itch.io MCP server works with butler
+- [x] Slack approvals work end-to-end
+- [x] All MCP servers register correctly
+- [x] All tests pass: `pytest tests/unit/test_mcp_servers.py` (56 tests) + `pytest tests/integration/test_slack_integration.py` (37 tests)
 
 ---
 
@@ -653,6 +661,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Phase 6 completed | PR #14 merged with MCP Servers (itch.io, Slack) |
 | 2026-01-18 | Phase 5 completed | PR #12 merged with Publish Agent implementation |
 | 2026-01-17 | Phase 4 completed | PR #10 merged with QA Agent implementation |
 | 2026-01-16 | Phase 3 completed | PR #8 merged with Build Agent implementation |

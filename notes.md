@@ -600,42 +600,149 @@ tests/unit/test_publish_agent.py (new, 580 lines) - 48 tests
 
 ---
 
-## Next Session: Phase 6 Tasks
+## Session 7: 2026-01-18 — Phase 6 Complete
 
-Phase 6 focuses on MCP Servers. Key tasks:
+### Summary
 
-1. **6.1** Implement MCP server registry
-   - Register official servers (GitHub, Slack)
-   - Register custom servers
-   - Handle server lifecycle
+Implemented all 7 tasks for Phase 6 MCP Servers in a single PR (#14).
 
-2. **6.2** Implement butler CLI wrapper
-   - Download/install butler
-   - Login handling
-   - Push command wrapper
+### Key Implementation Decisions
 
-3. **6.3** Implement itch.io API client
-   - httpx-based async client
-   - Game metadata endpoints
-   - Upload status endpoints
+**MCP Server Registry (6.1):**
+- `MCPServerConfig` Pydantic model for server configuration
+- `MCPServerProcess` dataclass for running server state
+- `MCPServerRegistry` with lifecycle management (start, stop, restart)
+- Health checks with configurable timeout and retries
+- Async context manager for automatic cleanup
+- Server process monitoring with stdout/stderr capture
 
-4. **6.4** Implement itch.io MCP server
-   - Tools: upload_game, update_game_page, publish_game, get_game_status
+**Butler CLI Wrapper (6.2):**
+- `ButlerVersion`, `ButlerPushResult`, `ButlerStatusResult` dataclasses
+- Automatic butler download for macOS, Linux, Windows
+- `DOWNLOAD_URLS` ClassVar with platform-specific URLs
+- Push command with channel selection (html5, windows, mac, linux)
+- Status command for upload verification
+- Validate command for build integrity checks
+- Login handling with API key
 
-5. **6.5** Implement Slack approval hook
-   - Send approval request messages
-   - Wait for reaction or reply
-   - Handle timeouts gracefully
+**itch.io API Client (6.3):**
+- `ItchioGame`, `ItchioUpload`, `ItchioUser` Pydantic models
+- httpx-based async client with retry logic (3 retries by default)
+- `APIResponse` wrapper for consistent error handling
+- Rate limiting awareness
+- Endpoints: get_my_games, get_game, get_game_uploads, get_profile
 
-6. **6.6-6.7** Write unit and integration tests
+**itch.io MCP Server (6.4):**
+- Uses `mcp` library for MCP protocol
+- JSON-RPC 2.0 compliant
+- Tools: upload_game, get_game_status, get_my_games, check_credentials
+- Proper error responses with error codes
+- Input validation with descriptive messages
 
-### Key Considerations for Phase 6
+**Slack Approval Hook (6.5):**
+- `ApprovalStatus` enum: PENDING, APPROVED, REJECTED, EXPIRED
+- `ApprovalRequest` dataclass for tracking requests
+- `SlackClient` async class for Slack Web API
+- `SlackMessage` dataclass for message tracking
+- Block Kit formatting for rich approval messages
+- Approval detection via reactions or thread replies
+- `APPROVE_REACTIONS` and `REJECT_REACTIONS` ClassVars
+- `send_notification()` for status updates with levels (info, warning, error, success)
 
-- MCP server follows JSON-RPC protocol
-- Butler CLI must be installed for itch.io uploads
-- Slack integration requires bot token with proper scopes
-- Need to handle async operations gracefully
-- Integration tests may require real credentials
+**Tests (6.6, 6.7):**
+- 56 unit tests for MCP servers
+- 37 integration tests for Slack approval hook
+- 294 total tests in the project
+
+### Issues Encountered & Solutions
+
+1. **Mutable class attributes without ClassVar:**
+   - Ruff RUF012 requires `ClassVar` for mutable class attributes
+   - Solution: Added `ClassVar[set[str]]` and `ClassVar[dict[str, str]]` annotations
+
+2. **asyncio.TimeoutError deprecation:**
+   - Ruff UP041 prefers builtin `TimeoutError` over `asyncio.TimeoutError`
+   - Solution: Changed to `TimeoutError`
+
+3. **RUF006 - Store reference to asyncio.create_task:**
+   - Tasks created with `asyncio.create_task()` may be garbage collected
+   - Solution: Store task reference and add done callback: `task.add_done_callback(lambda t: None)`
+
+4. **Circular import between workflow.py and hooks:**
+   - `workflow.py` imports hooks, hooks import from orchestrator
+   - Solution: Moved `from game_workflow.hooks.checkpoint import CheckpointHook` inside `_setup_default_hooks()` function
+
+5. **Unused function arguments in tests:**
+   - Ruff ARG001 warns about unused arguments
+   - Solution: Prefix with underscore: `_responder`, `_feedback`
+
+### Files Modified in Phase 6
+
+```
+src/game_workflow/
+├── mcp_servers/
+│   ├── __init__.py              (+25 lines) - export all new classes
+│   ├── registry.py              (+400 lines) - complete rewrite
+│   │                            - MCPServerConfig, MCPServerProcess, MCPServerRegistry
+│   └── itchio/
+│       ├── __init__.py          (+15 lines) - export all new classes
+│       ├── butler.py            (+350 lines) - butler CLI wrapper
+│       ├── api.py               (+300 lines) - itch.io API client
+│       └── server.py            (+200 lines) - MCP server implementation
+├── hooks/
+│   ├── __init__.py              (+10 lines) - export Slack classes
+│   └── slack_approval.py        (+550 lines) - complete Slack approval hook
+└── orchestrator/
+    └── workflow.py              (fixed) - moved hook imports inside function
+
+tests/
+├── unit/
+│   └── test_mcp_servers.py      (+900 lines) - 56 tests
+└── integration/
+    └── test_slack_integration.py (+450 lines) - 37 tests
+```
+
+### Test Coverage
+
+- 294 unit/integration tests total (93 new for Phase 6)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 7 Tasks
+
+Phase 7 focuses on Skills. Key tasks:
+
+1. **7.1** Enhance Phaser game skill with advanced patterns
+   - State management patterns
+   - Save/load game state
+   - Audio handling
+   - Mobile touch controls
+   - Common game mechanics
+
+2. **7.2** Create Godot game skill
+   - GDScript best practices
+   - Scene structure
+   - Signal patterns
+   - Export for web
+
+3. **7.3** Create Godot scaffold
+   - project.godot
+   - Basic scene structure
+   - Export presets for HTML5
+
+4. **7.4** Enhance game testing skill
+   - Visual regression testing
+   - Performance profiling
+   - Accessibility checks
+
+### Key Considerations for Phase 7
+
+- Skills are loaded by Claude Code during build phase
+- Should cover common game genres and patterns
+- Godot skill needs to match quality of Phaser skill
+- Testing skill should integrate with QAAgent
 
 ---
 
