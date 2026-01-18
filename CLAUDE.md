@@ -47,6 +47,7 @@ This repository implements an **automated game creation workflow** that:
 game-workflow/
 ├── CLAUDE.md                   # This file
 ├── implementation-plan.md      # Progress tracking (UPDATE AFTER EACH PR MERGE)
+├── notes.md                    # Notes and observations (UPDATE AFTER EACH PR MERGE)
 ├── pyproject.toml              # Project configuration
 ├── README.md                   # User-facing documentation
 │
