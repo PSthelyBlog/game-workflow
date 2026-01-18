@@ -11,12 +11,22 @@ multiple behaviors to the workflow orchestrator.
 
 from game_workflow.hooks.checkpoint import CheckpointHook
 from game_workflow.hooks.logging import JSONFormatter, LoggingHook, setup_logging
-from game_workflow.hooks.slack_approval import SlackApprovalHook
+from game_workflow.hooks.slack_approval import (
+    ApprovalRequest,
+    ApprovalStatus,
+    SlackApprovalHook,
+    SlackClient,
+    SlackMessage,
+)
 
 __all__ = [
+    "ApprovalRequest",
+    "ApprovalStatus",
     "CheckpointHook",
     "JSONFormatter",
     "LoggingHook",
     "SlackApprovalHook",
+    "SlackClient",
+    "SlackMessage",
     "setup_logging",
 ]
