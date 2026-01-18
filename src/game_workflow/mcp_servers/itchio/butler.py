@@ -20,6 +20,12 @@ from typing import TYPE_CHECKING, ClassVar
 
 import httpx
 
+from game_workflow.utils.validation import (
+    validate_channel,
+    validate_itchio_target,
+    validate_version,
+)
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -354,7 +360,25 @@ class ButlerCLI:
 
         Returns:
             Result of the push operation.
+
+        Raises:
+            ValueError: If target, channel, or version contain invalid characters.
         """
+        # Validate inputs to prevent command injection
+        try:
+            target = validate_itchio_target(target)
+            channel = validate_channel(channel)
+            if version:
+                version = validate_version(version)
+        except ValueError as e:
+            return ButlerPushResult(
+                success=False,
+                target=target,
+                channel=channel,
+                version=version,
+                error=str(e),
+            )
+
         if not directory.exists():
             return ButlerPushResult(
                 success=False,
@@ -465,7 +489,20 @@ class ButlerCLI:
 
         Returns:
             Status information for the game.
+
+        Raises:
+            ValueError: If target contains invalid characters.
         """
+        # Validate target to prevent command injection
+        try:
+            target = validate_itchio_target(target)
+        except ValueError as e:
+            return ButlerStatusResult(
+                success=False,
+                target=target,
+                error=str(e),
+            )
+
         cmd = [str(self.butler_path), "status", target]
 
         logger.info("Running butler status: %s", " ".join(cmd))
@@ -543,7 +580,18 @@ class ButlerCLI:
 
         Returns:
             True if fetch was successful.
+
+        Raises:
+            ValueError: If target or channel contain invalid characters.
         """
+        # Validate inputs to prevent command injection
+        try:
+            target = validate_itchio_target(target)
+            if channel:
+                channel = validate_channel(channel)
+        except ValueError:
+            return False
+
         cmd = [str(self.butler_path), "fetch"]
 
         fetch_target = target
