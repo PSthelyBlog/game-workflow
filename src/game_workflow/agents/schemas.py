@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from functools import lru_cache
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -376,8 +377,9 @@ class DesignOutput(BaseModel):
 # =============================================================================
 
 
+@lru_cache(maxsize=1)
 def get_concept_schema() -> dict[str, Any]:
-    """Get JSON Schema for GameConcept.
+    """Get JSON Schema for GameConcept (cached).
 
     Returns:
         JSON Schema dictionary.
@@ -385,8 +387,9 @@ def get_concept_schema() -> dict[str, Any]:
     return GameConcept.model_json_schema()
 
 
+@lru_cache(maxsize=1)
 def get_gdd_schema() -> dict[str, Any]:
-    """Get JSON Schema for GameDesignDocument.
+    """Get JSON Schema for GameDesignDocument (cached).
 
     Returns:
         JSON Schema dictionary.
@@ -394,8 +397,9 @@ def get_gdd_schema() -> dict[str, Any]:
     return GameDesignDocument.model_json_schema()
 
 
+@lru_cache(maxsize=1)
 def get_tech_spec_schema() -> dict[str, Any]:
-    """Get JSON Schema for TechnicalSpecification.
+    """Get JSON Schema for TechnicalSpecification (cached).
 
     Returns:
         JSON Schema dictionary.
@@ -403,8 +407,9 @@ def get_tech_spec_schema() -> dict[str, Any]:
     return TechnicalSpecification.model_json_schema()
 
 
+@lru_cache(maxsize=1)
 def get_design_output_schema() -> dict[str, Any]:
-    """Get JSON Schema for DesignOutput.
+    """Get JSON Schema for DesignOutput (cached).
 
     Returns:
         JSON Schema dictionary.
