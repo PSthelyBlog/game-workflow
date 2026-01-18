@@ -3,7 +3,7 @@
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
 > **Last Updated**: 2026-01-18
-> **Current Phase**: Phase 7 — Skills
+> **Current Phase**: Phase 8 — Integration & Testing
 
 ---
 
@@ -18,7 +18,7 @@
 | 4 | QA Agent | ✅ Complete | #9 | #10 |
 | 5 | Publish Agent | ✅ Complete | #11 | #12 |
 | 6 | MCP Servers | ✅ Complete | #13 | #14 |
-| 7 | Skills | ⬜ Not Started | — | — |
+| 7 | Skills | ✅ Complete | #15 | #16 |
 | 8 | Integration & Testing | ⬜ Not Started | — | — |
 | 9 | Documentation & Polish | ⬜ Not Started | — | — |
 
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 7 — Skills
-**Working On**: Ready to begin Phase 7
+**Phase**: 8 — Integration & Testing
+**Working On**: Ready to begin Phase 8
 **Blockers**: None
-**Next Action**: Enhance Phaser game skill and create Godot game skill
+**Next Action**: Implement full workflow integration
 
 ---
 
@@ -491,50 +491,63 @@ Create comprehensive skills for Claude Code.
 
 ### Tasks
 
-- [ ] **7.1** Enhance Phaser game skill with advanced patterns
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **7.1** Enhance Phaser game skill with advanced patterns
+  - Issue: #15
+  - PR: #16
+  - Merged: 2026-01-18
   - Notes:
-    - State management patterns
-    - Save/load game state
-    - Audio handling
-    - Mobile touch controls
-    - Common game mechanics (platformer, puzzle, etc.)
+    - State management (FSM, game state)
+    - Save/load systems (localStorage, IndexedDB)
+    - Audio handling (sound pools, crossfade)
+    - Mobile/touch controls (virtual joystick, gestures)
+    - Particle effects and scene transitions
+    - Game patterns by genre (platformer, RPG, shooter, puzzle)
+    - Performance optimization and web export
 
-- [ ] **7.2** Create Godot game skill (`skills/godot-game/SKILL.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **7.2** Create Godot game skill (`skills/godot-game/SKILL.md`)
+  - Issue: #15
+  - PR: #16
+  - Merged: 2026-01-18
   - Notes:
-    - GDScript best practices
-    - Scene structure
-    - Signal patterns
-    - Export for web
+    - GDScript fundamentals and best practices (~2100 lines)
+    - Scene system and node lifecycle
+    - Signals and communication patterns
+    - Input handling (keyboard, mouse, touch, gamepad)
+    - Physics systems (2D/3D)
+    - Animation systems (AnimationPlayer, AnimationTree, Tweens)
+    - Audio system and UI/Control nodes
+    - Tilemaps, state management, save/load
+    - Common game patterns by genre
+    - Web export for itch.io
 
-- [ ] **7.3** Create Godot scaffold (`templates/scaffolds/godot/`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **7.3** Create Godot scaffold (`templates/scaffolds/godot/`)
+  - Issue: #15
+  - PR: #16
+  - Merged: 2026-01-18
   - Notes:
-    - project.godot
-    - Basic scene structure
-    - Export presets for HTML5
+    - project.godot with autoloads and input mappings
+    - Complete UI system (main menu, HUD, pause menu, game over)
+    - Player controller with platformer/top-down support
+    - Game state management singleton (GameManager)
+    - Audio manager with sound pooling (AudioManager)
+    - Event bus for decoupled communication (EventBus)
+    - Web export preset for HTML5
 
-- [ ] **7.4** Enhance game testing skill
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **7.4** Enhance game testing skill
+  - Issue: #15
+  - PR: #16
+  - Merged: 2026-01-18
   - Notes:
-    - Visual regression testing
-    - Performance profiling
-    - Accessibility checks
+    - Accessibility testing (WCAG color contrast, keyboard navigation, screen reader, reduced motion, colorblind modes)
+    - Mobile device testing (device emulation, touch gestures, responsiveness, touch target sizes, battery-friendly idle)
+    - Audio testing (playback, controls, accessibility, performance)
+    - Network testing for multiplayer (mocking, latency simulation, WebSocket mocking, matchmaking)
 
 ### Phase 7 Completion Criteria
-- [ ] Phaser skill covers common game types
-- [ ] Godot skill is complete
-- [ ] Testing skill covers visual regression
-- [ ] Skills are validated with sample games
+- [x] Phaser skill covers common game types
+- [x] Godot skill is complete
+- [x] Testing skill covers visual regression
+- [x] Skills are validated with sample games
 
 ---
 
@@ -661,6 +674,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Phase 7 completed | PR #16 merged with Skills (Phaser enhanced, Godot skill+scaffold, Testing enhanced) |
 | 2026-01-18 | Phase 6 completed | PR #14 merged with MCP Servers (itch.io, Slack) |
 | 2026-01-18 | Phase 5 completed | PR #12 merged with Publish Agent implementation |
 | 2026-01-17 | Phase 4 completed | PR #10 merged with QA Agent implementation |
