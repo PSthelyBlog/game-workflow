@@ -2,8 +2,8 @@
 
 > **Status**: 🟡 In Progress
 > **Started**: 2026-01-16
-> **Last Updated**: 2026-01-17
-> **Current Phase**: Phase 5 — Publish Agent
+> **Last Updated**: 2026-01-18
+> **Current Phase**: Phase 6 — MCP Servers
 
 ---
 
@@ -16,7 +16,7 @@
 | 2 | Design Agent | ✅ Complete | #5 | #6 |
 | 3 | Build Agent | ✅ Complete | #7 | #8 |
 | 4 | QA Agent | ✅ Complete | #9 | #10 |
-| 5 | Publish Agent | ⬜ Not Started | — | — |
+| 5 | Publish Agent | ✅ Complete | #11 | #12 |
 | 6 | MCP Servers | ⬜ Not Started | — | — |
 | 7 | Skills | ⬜ Not Started | — | — |
 | 8 | Integration & Testing | ⬜ Not Started | — | — |
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 5 — Publish Agent
-**Working On**: Ready to begin Phase 5
+**Phase**: 6 — MCP Servers
+**Working On**: Ready to begin Phase 6
 **Blockers**: None
-**Next Action**: Create itch.io page template and implement PublishAgent
+**Next Action**: Implement MCP server registry and itch.io MCP server
 
 ---
 
@@ -361,37 +361,46 @@ Implement the release preparation agent.
 
 ### Tasks
 
-- [ ] **5.1** Create itch.io page template (`templates/itchio-page.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **5.1** Create itch.io page template (`templates/itchio-page.md`)
+  - Issue: #11
+  - PR: #12
+  - Merged: 2026-01-18
   - Notes:
-    - Store page description structure
-    - Screenshot requirements
-    - Tag recommendations
+    - Store page description structure with title, tagline, description
+    - Controls, features, screenshots, technical details sections
+    - Credits, version history, support information
+    - Tag recommendations using Jinja2 syntax
 
-- [ ] **5.2** Implement PublishAgent (`src/game_workflow/agents/publish.py`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **5.2** Implement PublishAgent (`src/game_workflow/agents/publish.py`)
+  - Issue: #11
+  - PR: #12
+  - Merged: 2026-01-18
   - Notes:
-    - Generate marketing copy from GDD
-    - Prepare store page content
-    - Generate/collect screenshots
-    - Create release tag on GitHub
-    - Prepare build artifacts
+    - Generate marketing copy from GDD using Claude API
+    - Prepare store page content with StorePageContent Pydantic schema
+    - Collect screenshots from directory with limit of 10
+    - Prepare GitHub release metadata (GitHubRelease schema)
+    - Package build artifacts into zip archives
+    - Save all publish artifacts (store-page.md, store-page.json, publish-output.json)
 
-- [ ] **5.3** Write unit tests for PublishAgent
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Mock external services, test artifact generation
+- [x] **5.3** Write unit tests for PublishAgent
+  - Issue: #11
+  - PR: #12
+  - Merged: 2026-01-18
+  - Notes:
+    - 48 tests covering schemas, enums, config, and agent functionality
+    - GDD loading tests (file and data)
+    - Screenshot handling tests with limit verification
+    - Artifact packaging tests with zip creation
+    - GitHub release preparation tests
+    - Store page rendering tests
+    - JSON parsing tests with code block handling
 
 ### Phase 5 Completion Criteria
-- [ ] PublishAgent generates marketing copy
-- [ ] Store page content is prepared
-- [ ] Release artifacts are created
-- [ ] All tests pass: `pytest tests/unit/test_agents.py::TestPublishAgent`
+- [x] PublishAgent generates marketing copy
+- [x] Store page content is prepared
+- [x] Release artifacts are created
+- [x] All tests pass: `pytest tests/unit/test_publish_agent.py` (48 tests)
 
 ---
 
@@ -644,6 +653,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Phase 5 completed | PR #12 merged with Publish Agent implementation |
 | 2026-01-17 | Phase 4 completed | PR #10 merged with QA Agent implementation |
 | 2026-01-16 | Phase 3 completed | PR #8 merged with Build Agent implementation |
 | 2026-01-16 | Phase 2 completed | PR #6 merged with Design Agent |

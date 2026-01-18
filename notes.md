@@ -505,30 +505,137 @@ tests/unit/test_qa_agent.py  (new, 789 lines) - 49 tests
 
 ---
 
-## Next Session: Phase 5 Tasks
+## Session 6: 2026-01-18 — Phase 5 Complete
 
-Phase 5 focuses on the Publish Agent. Key tasks:
+### Summary
 
-1. **5.1** Create itch.io page template (`templates/itchio-page.md`)
-   - Store page description structure
-   - Screenshot requirements
-   - Tag recommendations
+Implemented all 3 tasks for Phase 5 Publish Agent in a single PR (#12).
 
-2. **5.2** Implement PublishAgent (`src/game_workflow/agents/publish.py`)
-   - Generate marketing copy from GDD
-   - Prepare store page content
-   - Create release tag on GitHub
-   - Prepare build artifacts
+### Key Implementation Decisions
 
-3. **5.3** Write unit tests for PublishAgent
+**itch.io Page Template (5.1):**
+- Jinja2 template with support for all store page sections
+- Title, tagline, description, controls, features
+- Optional sections: story, tips, highlights, screenshots
+- Technical details: resolution, browser support, input methods
+- Credits, version history, support information
+- Tag recommendations at the bottom
 
-### Key Considerations for Phase 5
+**PublishAgent (5.2):**
+- Generates marketing copy from GDD using Claude API
+- `MARKETING_COPY_PROMPT` creates compelling store page content
+- `StorePageContent` Pydantic schema for structured output
+- `_add_screenshots()` collects images from directory (limit 10)
+- `_package_artifacts()` creates zip archive of game build
+- `_prepare_github_release()` creates GitHubRelease metadata
+- All outputs saved as JSON and markdown files
 
-- Need to generate compelling marketing copy from GDD
-- Screenshots may need to be captured during QA phase
-- GitHub release creation requires API integration
-- Build artifacts need to be packaged for itch.io upload
-- May want to generate cover images/banners
+**Pydantic Schemas:**
+- `ReleaseType` enum: INITIAL, UPDATE, PATCH, BETA, DEMO
+- `ItchioClassification` enum: GAME, TOOL, etc.
+- `ItchioVisibility` enum: DRAFT, RESTRICTED, PUBLIC
+- `ControlMapping`, `FeatureHighlight`, `Screenshot`, `Credit` models
+- `TechnicalDetails`, `VersionInfo`, `SupportInfo` models
+- `StorePageContent` combines all store page data
+- `ReleaseArtifact`, `GitHubRelease`, `PublishOutput` models
+- `PublishConfig` dataclass for agent configuration
+
+**Tests (5.3):**
+- 48 tests covering all components
+- Schema validation tests for all Pydantic models
+- Enum value tests
+- PublishConfig dataclass tests
+- GDD loading tests (from file and data)
+- Screenshot handling tests with limit verification
+- Artifact packaging tests with zip creation
+- GitHub release preparation tests
+- Store page rendering tests
+- JSON parsing tests with code block handling
+- Text extraction tests
+
+### Issues Encountered & Solutions
+
+1. **Ruff linting errors:**
+   - Unused `shutil` import - removed
+   - `Path` should be in TYPE_CHECKING block - moved
+   - Unused `GameEngine` import - removed
+
+2. **Template not linted as Python:**
+   - Ruff tries to lint `.md` files with Jinja2 syntax as Python
+   - Solution: Ignore those errors - they're expected for Jinja2 templates
+
+3. **Import organization:**
+   - TYPE_CHECKING imports should be at the bottom
+   - Solution: Moved `from pathlib import Path` into TYPE_CHECKING block
+
+### Files Modified in Phase 5
+
+```
+templates/itchio-page.md         (rewritten) - ~140 lines comprehensive template
+                                 - Jinja2 syntax for all sections
+                                 - Optional sections with {% if %}
+                                 - Lists with {% for %}
+
+src/game_workflow/agents/publish.py (+800 lines) - full PublishAgent implementation
+                                    - ReleaseType, ItchioClassification, ItchioVisibility enums
+                                    - ControlMapping, FeatureHighlight, Screenshot, Credit models
+                                    - TechnicalDetails, VersionInfo, SupportInfo models
+                                    - StorePageContent, ReleaseArtifact, GitHubRelease models
+                                    - PublishOutput combining all outputs
+                                    - PublishConfig dataclass
+                                    - PublishAgent with marketing copy generation
+
+src/game_workflow/agents/__init__.py (+35 lines) - export all publish schemas
+
+src/game_workflow/utils/templates.py (+12 lines) - render_itchio_page helper
+
+tests/unit/test_publish_agent.py (new, 580 lines) - 48 tests
+```
+
+### Test Coverage
+
+- 206 unit tests total (48 new for Publish Agent)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Phase 6 Tasks
+
+Phase 6 focuses on MCP Servers. Key tasks:
+
+1. **6.1** Implement MCP server registry
+   - Register official servers (GitHub, Slack)
+   - Register custom servers
+   - Handle server lifecycle
+
+2. **6.2** Implement butler CLI wrapper
+   - Download/install butler
+   - Login handling
+   - Push command wrapper
+
+3. **6.3** Implement itch.io API client
+   - httpx-based async client
+   - Game metadata endpoints
+   - Upload status endpoints
+
+4. **6.4** Implement itch.io MCP server
+   - Tools: upload_game, update_game_page, publish_game, get_game_status
+
+5. **6.5** Implement Slack approval hook
+   - Send approval request messages
+   - Wait for reaction or reply
+   - Handle timeouts gracefully
+
+6. **6.6-6.7** Write unit and integration tests
+
+### Key Considerations for Phase 6
+
+- MCP server follows JSON-RPC protocol
+- Butler CLI must be installed for itch.io uploads
+- Slack integration requires bot token with proper scopes
+- Need to handle async operations gracefully
+- Integration tests may require real credentials
 
 ---
 
@@ -538,3 +645,5 @@ Phase 5 focuses on the Publish Agent. Key tasks:
 - **implementation-plan.md**: Detailed task tracking
 - **Agent SDK Docs**: https://platform.claude.com/docs/en/agent-sdk/overview
 - **MCP Specification**: https://modelcontextprotocol.io
+- **itch.io API**: https://itch.io/docs/api/overview
+- **butler CLI**: https://itch.io/docs/butler/
