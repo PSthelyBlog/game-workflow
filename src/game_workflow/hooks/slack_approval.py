@@ -148,7 +148,7 @@ class SlackClient:
                 error = data.get("error", "Unknown error")
                 raise RuntimeError(f"Slack API error: {error}")
 
-            return data
+            return dict(data)
 
         except httpx.HTTPError as e:
             raise RuntimeError(f"Slack request failed: {e}") from e
@@ -239,7 +239,8 @@ class SlackClient:
                 params={"channel": channel, "timestamp": ts},
             )
             message = data.get("message", {})
-            return message.get("reactions", [])
+            reactions: list[dict[str, Any]] = message.get("reactions", [])
+            return reactions
         except RuntimeError:
             return []
 

@@ -16,8 +16,6 @@ from typing import Any
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
 from mcp.types import (
-    INTERNAL_ERROR,
-    INVALID_PARAMS,
     CallToolResult,
     TextContent,
     Tool,
@@ -28,6 +26,9 @@ from game_workflow.mcp_servers.itchio.api import ItchioAPI
 from game_workflow.mcp_servers.itchio.butler import ButlerCLI
 
 logger = logging.getLogger(__name__)
+
+# Type alias for content that can be used in CallToolResult
+ContentList = list[TextContent]
 
 
 # Tool parameter schemas
@@ -83,12 +84,12 @@ class CheckCredentialsParams(BaseModel):
 server = Server("itchio")
 
 
-def _create_error_response(message: str, code: str = INTERNAL_ERROR) -> list[TextContent]:
+def _create_error_response(message: str, code: int = -32603) -> ContentList:
     """Create an error response.
 
     Args:
         message: Error message.
-        code: Error code.
+        code: Error code (default: -32603 for internal error).
 
     Returns:
         List containing error text content.
@@ -96,7 +97,7 @@ def _create_error_response(message: str, code: str = INTERNAL_ERROR) -> list[Tex
     return [TextContent(type="text", text=json.dumps({"error": message, "code": code}))]
 
 
-def _create_success_response(data: dict[str, Any]) -> list[TextContent]:
+def _create_success_response(data: dict[str, Any]) -> ContentList:
     """Create a success response.
 
     Args:
@@ -158,7 +159,7 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> CallToolResult:
             return await _check_credentials(arguments)
         else:
             return CallToolResult(
-                content=_create_error_response(f"Unknown tool: {name}", INVALID_PARAMS),
+                content=_create_error_response(f"Unknown tool: {name}", -32602),
                 isError=True,
             )
     except Exception as e:
@@ -182,7 +183,7 @@ async def _upload_game(arguments: dict[str, Any]) -> CallToolResult:
         params = UploadGameParams(**arguments)
     except Exception as e:
         return CallToolResult(
-            content=_create_error_response(f"Invalid parameters: {e}", INVALID_PARAMS),
+            content=_create_error_response(f"Invalid parameters: {e}", -32602),
             isError=True,
         )
 
@@ -264,7 +265,7 @@ async def _get_game_status(arguments: dict[str, Any]) -> CallToolResult:
         params = GetGameStatusParams(**arguments)
     except Exception as e:
         return CallToolResult(
-            content=_create_error_response(f"Invalid parameters: {e}", INVALID_PARAMS),
+            content=_create_error_response(f"Invalid parameters: {e}", -32602),
             isError=True,
         )
 
