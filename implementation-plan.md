@@ -29,9 +29,9 @@
 ## Current Status
 
 **Phase**: 9 — Documentation & Polish
-**Working On**: Tasks 9.1, 9.2, 9.3 completed, ready for 9.4-9.7
+**Working On**: Tasks 9.1-9.6 completed, ready for 9.7
 **Blockers**: None
-**Next Action**: Skills documentation (Task 9.4)
+**Next Action**: Create release v0.1.0 (Task 9.7)
 
 ---
 
@@ -661,25 +661,34 @@ Final documentation and release preparation.
     - itch.io API client documentation
     - Security considerations
 
-- [ ] **9.4** Write skills documentation (`docs/skills.md`)
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: How to create custom skills
-
-- [ ] **9.5** Create setup scripts
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **9.4** Write skills documentation (`docs/skills.md`)
+  - Issue: #29
+  - PR: #30
+  - Merged: 2026-01-18
   - Notes:
-    - `scripts/setup-butler.sh`
-    - `scripts/setup-slack-app.sh`
+    - How Claude Code uses skills during build phase
+    - Anatomy of a skill file with key sections
+    - Step-by-step guide to creating custom skills
+    - Best practices for content and code examples
+    - Troubleshooting common issues
 
-- [ ] **9.6** Final README polish
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
-  - Notes: Badges, GIFs, examples
+- [x] **9.5** Create setup scripts
+  - Issue: #29
+  - PR: #30
+  - Merged: 2026-01-18
+  - Notes:
+    - `scripts/setup-butler.sh` - Downloads/installs butler, handles login
+    - `scripts/setup-slack-app.sh` - Interactive guide for Slack app setup
+
+- [x] **9.6** Final README polish
+  - Issue: #29
+  - PR: #30
+  - Merged: 2026-01-18
+  - Notes:
+    - Added CI, Python, license, code style badges
+    - Added ASCII workflow and architecture diagrams
+    - Improved quick start, commands, troubleshooting sections
+    - Added documentation links section
 
 - [ ] **9.7** Create release v0.1.0
   - Issue: #_pending_
@@ -701,6 +710,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Tasks 9.4, 9.5, 9.6 completed | PR #30 merged with skills docs, setup scripts, README polish |
 | 2026-01-18 | Tasks 9.1, 9.2, 9.3 completed | PR #28 merged with setup, configuration, and MCP server documentation |
 | 2026-01-18 | Phase 8 completed | PR #26 merged with security audit (input validation, 41 security tests) |
 | 2026-01-18 | Task 8.4 completed | PR #24 merged with performance infrastructure (PerformanceHook, metrics dataclasses, 40 tests) |

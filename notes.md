@@ -1386,14 +1386,87 @@ docs/
 
 ---
 
-## Next Session: Tasks 9.4-9.7
+## Session 15: 2026-01-18 — Tasks 9.4, 9.5, 9.6 Complete
 
-Remaining Phase 9 tasks:
+### Summary
 
-4. Write skills documentation (`docs/skills.md`)
-5. Create setup scripts (butler, Slack app)
-6. Final README polish
-7. Create release v0.1.0
+Implemented skills documentation, setup scripts, and README polish in PR #30.
+
+### Documentation Created
+
+**docs/skills.md (Task 9.4):**
+- Overview of how skills work in the build phase
+- Available skills reference (Phaser, Godot, Testing)
+- Skill file anatomy with all key sections
+- Step-by-step guide to creating custom skills
+- Best practices for content and code examples
+- Troubleshooting common issues
+- Appendix with full skill template
+
+### Scripts Created
+
+**scripts/setup-butler.sh (Task 9.5):**
+- Detects platform (macOS ARM64/Intel, Linux, Windows)
+- Downloads butler from itch.io's CDN
+- Extracts and installs to `~/.game-workflow/bin/`
+- Handles login with `ITCHIO_API_KEY` or interactive browser auth
+- Options: `--install-only`, `--login-only`, `--help`
+
+**scripts/setup-slack-app.sh (Task 9.5):**
+- Interactive step-by-step guide for Slack app creation
+- Shows required OAuth scopes:
+  - `chat:write`, `chat:write.public` (posting)
+  - `reactions:read` (approval detection)
+  - `channels:history`, `groups:history`, `im:history`, `mpim:history` (message reading)
+- Can generate Slack app manifest with `--manifest`
+- Can test connection with `--test`
+
+### README Improvements (Task 9.6)
+
+**Badges added:**
+- CI status badge
+- Python 3.11+ badge
+- MIT License badge
+- Ruff code style badge
+
+**Structure improvements:**
+- ASCII workflow diagram showing pipeline stages
+- ASCII architecture diagram showing agents and tools
+- Agent table with purpose and tools
+- Skills table with coverage stats
+- Requirements tables (required/optional)
+- Commands section with all CLI options
+- Troubleshooting section with common issues
+- Contributing guidelines
+- Acknowledgments section
+
+### Files Created/Modified
+
+```
+docs/
+└── skills.md             (new, 697 lines) - comprehensive skills guide
+
+scripts/
+├── setup-butler.sh       (new, 290 lines) - butler installation/login
+└── setup-slack-app.sh    (new, 309 lines) - Slack app setup guide
+
+README.md                 (+311 lines) - badges, diagrams, improved sections
+```
+
+### Notes
+
+- Both scripts are POSIX-compatible and work on macOS and Linux
+- Scripts use colored output for better UX
+- README ASCII diagrams chosen over images for terminal compatibility
+- All documentation cross-links to related docs
+
+---
+
+## Next Session: Task 9.7
+
+Remaining Phase 9 task:
+
+7. Create release v0.1.0 (Tag, changelog, GitHub release)
 
 ---
 
