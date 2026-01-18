@@ -22,6 +22,9 @@ from game_workflow.agents.schemas import (
     GameDesignDocument,
     GameEngine,
     TechnicalSpecification,
+    get_concept_schema,
+    get_gdd_schema,
+    get_tech_spec_schema,
 )
 from game_workflow.orchestrator.exceptions import AgentError
 from game_workflow.utils.templates import render_concept, render_gdd
@@ -250,7 +253,7 @@ class DesignAgent(BaseAgent):
         Returns:
             List of generated concepts.
         """
-        schema = GameConcept.model_json_schema()
+        schema = get_concept_schema()
 
         system_prompt = CONCEPT_GENERATION_PROMPT.format(
             num_concepts=self.num_concepts,
@@ -302,7 +305,7 @@ class DesignAgent(BaseAgent):
         Returns:
             Complete Game Design Document.
         """
-        schema = GameDesignDocument.model_json_schema()
+        schema = get_gdd_schema()
 
         system_prompt = GDD_GENERATION_PROMPT.format(
             concept=concept.model_dump_json(indent=2),
@@ -346,7 +349,7 @@ class DesignAgent(BaseAgent):
         Returns:
             Technical specification.
         """
-        schema = TechnicalSpecification.model_json_schema()
+        schema = get_tech_spec_schema()
 
         # Summarize mechanics for the prompt
         mechanics_summary = ", ".join(m.name for m in gdd.core_mechanics[:5])
