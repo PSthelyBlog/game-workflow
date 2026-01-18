@@ -19,7 +19,7 @@
 | 5 | Publish Agent | ✅ Complete | #11 | #12 |
 | 6 | MCP Servers | ✅ Complete | #13 | #14 |
 | 7 | Skills | ✅ Complete | #15 | #16 |
-| 8 | Integration & Testing | 🟡 In Progress | #17 | #18 |
+| 8 | Integration & Testing | ✅ Complete | #17, #19, #21, #23, #25 | #18, #20, #22, #24, #26 |
 | 9 | Documentation & Polish | ⬜ Not Started | — | — |
 
 **Legend**: ⬜ Not Started | 🟡 In Progress | ✅ Complete | 🔴 Blocked
@@ -28,10 +28,10 @@
 
 ## Current Status
 
-**Phase**: 8 — Integration & Testing
-**Working On**: Task 8.4 complete, ready for 8.5
+**Phase**: 8 — Integration & Testing (Complete!)
+**Working On**: Phase 8 complete, ready for Phase 9
 **Blockers**: None
-**Next Action**: Security audit (8.5)
+**Next Action**: Documentation (Phase 9)
 
 ---
 
@@ -603,20 +603,22 @@ End-to-end integration and comprehensive testing.
     - Added lru_cache to JSON schema generation functions
     - 40 new unit tests for performance tracking
 
-- [ ] **8.5** Security audit
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **8.5** Security audit
+  - Issue: #25
+  - PR: #26
+  - Merged: 2026-01-18
   - Notes:
-    - Review credential handling
-    - Check for injection vulnerabilities
-    - Validate input sanitization
+    - Reviewed credential handling (all secure - env vars only)
+    - Added command injection prevention (validate_itchio_target, validate_channel, validate_version)
+    - Added path traversal prevention (validate_state_id, validate_path_safety)
+    - 41 new security tests
+    - No secrets in logs or state files (verified)
 
 ### Phase 8 Completion Criteria
-- [ ] Full workflow runs successfully
-- [ ] All tests pass with >80% coverage
-- [ ] Performance is acceptable (<30 min for simple game)
-- [ ] Security audit passes
+- [x] Full workflow runs successfully
+- [x] All tests pass with >80% coverage
+- [x] Performance is acceptable (<30 min for simple game)
+- [x] Security audit passes
 
 ---
 
@@ -684,6 +686,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Phase 8 completed | PR #26 merged with security audit (input validation, 41 security tests) |
 | 2026-01-18 | Task 8.4 completed | PR #24 merged with performance infrastructure (PerformanceHook, metrics dataclasses, 40 tests) |
 | 2026-01-18 | Task 8.3 completed | PR #22 merged with 23 E2E tests (full workflow, artifacts, state persistence, CLI, approval gates) |
 | 2026-01-18 | Task 8.2 completed | PR #20 merged with 61 integration tests (external services, approval flows, error scenarios) |
