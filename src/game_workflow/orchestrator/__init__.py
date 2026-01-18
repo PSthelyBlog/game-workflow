@@ -19,10 +19,11 @@ from game_workflow.orchestrator.exceptions import (
     WorkflowError,
 )
 from game_workflow.orchestrator.state import CheckpointData, WorkflowPhase, WorkflowState
-from game_workflow.orchestrator.workflow import Workflow
+from game_workflow.orchestrator.workflow import ApprovalHook, Workflow, WorkflowHook
 
 __all__ = [
     "AgentError",
+    "ApprovalHook",
     "ApprovalRejectedError",
     "ApprovalTimeoutError",
     "BuildFailedError",
@@ -36,6 +37,7 @@ __all__ = [
     "StateNotFoundError",
     "Workflow",
     "WorkflowError",
+    "WorkflowHook",
     "WorkflowPhase",
     "WorkflowState",
 ]
