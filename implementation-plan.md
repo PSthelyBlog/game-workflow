@@ -19,7 +19,7 @@
 | 5 | Publish Agent | ✅ Complete | #11 | #12 |
 | 6 | MCP Servers | ✅ Complete | #13 | #14 |
 | 7 | Skills | ✅ Complete | #15 | #16 |
-| 8 | Integration & Testing | ⬜ Not Started | — | — |
+| 8 | Integration & Testing | 🟡 In Progress | #17 | #18 |
 | 9 | Documentation & Polish | ⬜ Not Started | — | — |
 
 **Legend**: ⬜ Not Started | 🟡 In Progress | ✅ Complete | 🔴 Blocked
@@ -29,9 +29,9 @@
 ## Current Status
 
 **Phase**: 8 — Integration & Testing
-**Working On**: Ready to begin Phase 8
+**Working On**: Task 8.1 complete, ready for 8.2
 **Blockers**: None
-**Next Action**: Implement full workflow integration
+**Next Action**: Write integration tests (8.2)
 
 ---
 
@@ -557,14 +557,17 @@ End-to-end integration and comprehensive testing.
 
 ### Tasks
 
-- [ ] **8.1** Implement full workflow integration
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **8.1** Implement full workflow integration
+  - Issue: #17
+  - PR: #18
+  - Merged: 2026-01-18
   - Notes:
-    - Wire all agents together
-    - Test phase transitions
-    - Test error recovery
+    - Wired all agents (Design, Build, QA, Publish) in workflow.py
+    - Added ApprovalHook and WorkflowHook protocols
+    - Implemented phase transitions with approval gates
+    - Added retry logic with configurable max_retries
+    - Added rollback_to_checkpoint for error recovery
+    - 18 new integration tests in tests/integration/test_workflow.py
 
 - [ ] **8.2** Write integration tests
   - Issue: #_pending_
@@ -674,6 +677,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Task 8.1 completed | PR #18 merged with full workflow integration (all agents wired, approval hooks, error recovery) |
 | 2026-01-18 | Phase 7 completed | PR #16 merged with Skills (Phaser enhanced, Godot skill+scaffold, Testing enhanced) |
 | 2026-01-18 | Phase 6 completed | PR #14 merged with MCP Servers (itch.io, Slack) |
 | 2026-01-18 | Phase 5 completed | PR #12 merged with Publish Agent implementation |

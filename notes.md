@@ -877,41 +877,101 @@ templates/scaffolds/godot/
 
 ---
 
-## Next Session: Phase 8 Tasks
+## Session 9: 2026-01-18 — Task 8.1 Complete
 
-Phase 8 focuses on Integration & Testing. Key tasks:
+### Summary
 
-1. **8.1** Implement full workflow integration
-   - Wire all agents together
-   - Test phase transitions
-   - Test error recovery
+Implemented Task 8.1 (full workflow integration) in PR #18.
 
-2. **8.2** Write integration tests
-   - Test with mocked external services
-   - Test all approval paths
-   - Test error scenarios
+### Key Implementation Decisions
 
-3. **8.3** Write E2E tests
-   - Full workflow with test itch.io project
-   - Automated approvals for CI
-   - Verify all artifacts
+**Workflow Integration:**
+- All agents (Design, Build, QA, Publish) wired into `workflow.py` via lazy-loaded properties
+- Private attributes (`_design_agent`, `_build_agent`, etc.) instantiated on first access
+- Phase results stored in `_design_result`, `_build_result`, `_qa_result` for passing between phases
+- Approval gates after DESIGN (concept), QA (build), and PUBLISH (release)
 
-4. **8.4** Performance testing and optimization
-   - Measure workflow duration
-   - Identify bottlenecks
-   - Optimize API calls
+**Protocol-Based Hooks:**
+- `WorkflowHook` protocol for phase lifecycle (on_phase_start, on_phase_complete, on_error)
+- `ApprovalHook` protocol for approvals (request_approval, send_notification)
+- Default hooks (LoggingHook, CheckpointHook) set up in `_setup_default_hooks()`
+- Hooks are called with try/except to prevent hook failures from stopping workflow
 
-5. **8.5** Security audit
-   - Review credential handling
-   - Check for injection vulnerabilities
-   - Validate input sanitization
+**Error Recovery:**
+- `max_retries` parameter (default 2) for automatic retry on `AgentError`, `BuildFailedError`, `QAFailedError`
+- `_retry_counts` dict tracks retry attempts per phase
+- `retry_phase()` method for manual retry
+- `rollback_to_checkpoint()` for recovering from failed state
+- `cancel()` method for graceful workflow cancellation
 
-### Key Considerations for Phase 8
+**Approval Flow:**
+- `_request_approval()` method handles approval gate logic
+- `auto_approve` flag skips approvals (for testing)
+- If no approval hook configured, auto-approves with warning
+- Approvals tracked in `state.approvals` dict
 
-- Need to wire all agents into the main workflow
-- Mock external services (GitHub, Slack, itch.io) for integration tests
-- E2E tests should use real services but test projects
-- Performance target: <30 min for simple game
+### Issues Encountered & Solutions
+
+1. **Cannot patch properties with patch.object:**
+   - `patch.object(workflow, "design_agent")` fails because it's a property
+   - Solution: Directly assign to private attributes: `workflow._design_agent = mock_agent`
+
+2. **Method assignment in tests:**
+   - `workflow._execute_current_phase = tracking_execute` fails mypy check
+   - Solution: Use a custom hook class to track phases instead
+
+3. **`__all__` not sorted:**
+   - Ruff RUF022 requires alphabetically sorted `__all__` lists
+   - Solution: Run `ruff check --fix` to auto-sort
+
+4. **Code formatting:**
+   - CI runs `ruff format --check` which failed
+   - Solution: Always run `ruff format .` before pushing
+
+### Files Modified in Task 8.1
+
+```
+src/game_workflow/orchestrator/
+├── __init__.py              (+2 lines) - export ApprovalHook, WorkflowHook
+└── workflow.py              (+500 lines) - complete rewrite
+                             - ApprovalHook, WorkflowHook protocols
+                             - Lazy-loaded agent properties
+                             - Phase methods (_design_phase, _build_phase, etc.)
+                             - Retry logic, error recovery
+                             - Notification support
+
+tests/integration/
+└── test_workflow.py         (new, 975 lines) - 18 integration tests
+                             - MockApprovalHook for testing
+                             - create_mock_agent() helper
+                             - Full workflow tests
+                             - Phase transition tests
+                             - Error recovery tests
+                             - State management tests
+```
+
+### Test Coverage
+
+- 312 tests total (18 new for workflow integration)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Task 8.2
+
+Task 8.2 focuses on additional integration tests:
+
+1. Test with mocked external services (GitHub, Slack, itch.io)
+2. Test all approval paths (approve, reject, timeout)
+3. Test error scenarios (agent failures, API errors, timeouts)
+
+### Key Considerations
+
+- Some integration tests already exist from 8.1
+- Need to add more edge case testing
+- Consider testing with actual Slack API (optional)
+- May combine 8.2 with 8.3 (E2E tests) in one PR
 
 ---
 
