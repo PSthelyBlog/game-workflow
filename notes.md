@@ -958,20 +958,113 @@ tests/integration/
 
 ---
 
-## Next Session: Task 8.2
+## Session 10: 2026-01-18 — Task 8.2 Complete
 
-Task 8.2 focuses on additional integration tests:
+### Summary
 
-1. Test with mocked external services (GitHub, Slack, itch.io)
-2. Test all approval paths (approve, reject, timeout)
-3. Test error scenarios (agent failures, API errors, timeouts)
+Implemented Task 8.2 (integration tests) in PR #20. Added 61 new tests across 3 files.
+
+### Key Implementation Decisions
+
+**Test File Organization:**
+- `test_external_services.py` (21 tests): Mock external services (GitHub, Slack, itch.io)
+- `test_approval_flows.py` (16 tests): All approval paths (approve, reject, timeout, selective)
+- `test_error_scenarios.py` (24 tests): Error handling, retries, recovery
+
+**Custom Approval Hook Classes:**
+- `AlwaysApproveHook`: Returns True for all approvals
+- `AlwaysRejectHook`: Returns False for all approvals
+- `SelectiveApprovalHook`: Approves specific gates (concept, build, publish)
+- `TimeoutApprovalHook`: Simulates timeout (raises exception)
+- `DelayedApprovalHook`: Approves after specified delay
+
+**Mock Patterns:**
+- Used `MagicMock(spec=ClassName)` for spec-based mocking
+- Used `AsyncMock` for async methods
+- Created mock fixtures for GDD files with tmp_path
+- Notification tracking via list accumulation in hooks
+
+### Issues Encountered & Solutions
+
+1. **Slack method mocking:**
+   - Patching `hook._client` didn't work for tests
+   - Solution: Patched `SlackClient` methods directly, tested internal methods like `_check_reactions`
+
+2. **GameDesignDocument validation:**
+   - Too many required fields for simple test fixtures
+   - Solution: Used `MagicMock()` with only needed attributes instead of real Pydantic model
+
+3. **QAFailedError keyword argument:**
+   - Used `critical_failures` but actual parameter is `test_results`
+   - Solution: Changed to `QAFailedError("message", test_results={"failed": [...]})`
+
+4. **WorkflowState._get_state_path missing:**
+   - Method doesn't exist on WorkflowState
+   - Solution: Used `settings.workflow.state_dir / f"{workflow.state.id}.json"` directly
+
+5. **GitHubRelease attribute name:**
+   - Attribute is `tag` not `tag_name`
+   - Solution: Fixed assertion to use correct attribute
+
+6. **ARG002 noqa placement:**
+   - Putting `# noqa: ARG002` on method line doesn't suppress parameter-level warnings
+   - Solution: Moved noqa comment to each parameter line individually
+
+7. **Ruff format check:**
+   - CI failed because files weren't formatted
+   - Solution: Ran `ruff format` on all three test files
+
+### Files Created in Task 8.2
+
+```
+tests/integration/
+├── test_external_services.py  (new, ~530 lines) - 21 tests
+│   - TestSlackIntegration: approval blocks, reactions, replies
+│   - TestItchioIntegration: API, Butler, error handling
+│   - TestMCPServerRegistry: server config, custom servers
+│   - TestGitHubIntegration: release metadata
+│   - TestWorkflowWithExternalServices: Slack notifications, itch.io publish
+│
+├── test_approval_flows.py     (new, ~500 lines) - 16 tests
+│   - Custom hook classes for each approval scenario
+│   - test_approval_granted_flow
+│   - test_approval_rejected_flow
+│   - test_selective_approval_gates
+│   - test_auto_approve_mode
+│   - test_notification_tracking
+│
+└── test_error_scenarios.py    (new, ~760 lines) - 24 tests
+    - Agent failure tests (Design, Build, QA, Publish)
+    - API error tests (rate limit, auth, network)
+    - Timeout handling tests
+    - Retry logic tests (success after failure, exhaustion)
+    - Error recovery tests (cancel, rollback)
+    - State persistence tests
+    - Hook error isolation tests
+```
+
+### Test Coverage
+
+- 373 tests total (61 new for Task 8.2)
+- All tests pass on Python 3.11 and 3.12
+- CI checks: lint, format, type check, tests
+
+---
+
+## Next Session: Task 8.3
+
+Task 8.3 focuses on E2E tests:
+
+1. Full workflow with test itch.io project
+2. Automated approvals for CI
+3. Verify all artifacts
 
 ### Key Considerations
 
-- Some integration tests already exist from 8.1
-- Need to add more edge case testing
-- Consider testing with actual Slack API (optional)
-- May combine 8.2 with 8.3 (E2E tests) in one PR
+- Need test itch.io project setup
+- Consider using `auto_approve=True` for CI runs
+- May need playwright for browser-based testing
+- E2E tests will be slower, consider separate CI job
 
 ---
 

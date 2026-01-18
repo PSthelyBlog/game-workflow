@@ -29,9 +29,9 @@
 ## Current Status
 
 **Phase**: 8 — Integration & Testing
-**Working On**: Task 8.1 complete, ready for 8.2
+**Working On**: Task 8.2 complete, ready for 8.3
 **Blockers**: None
-**Next Action**: Write integration tests (8.2)
+**Next Action**: Write E2E tests (8.3)
 
 ---
 
@@ -569,14 +569,15 @@ End-to-end integration and comprehensive testing.
     - Added rollback_to_checkpoint for error recovery
     - 18 new integration tests in tests/integration/test_workflow.py
 
-- [ ] **8.2** Write integration tests
-  - Issue: #_pending_
-  - PR: #_pending_
-  - Merged: _pending_
+- [x] **8.2** Write integration tests
+  - Issue: #19
+  - PR: #20
+  - Merged: 2026-01-18
   - Notes:
-    - Test with mocked external services
-    - Test all approval paths
-    - Test error scenarios
+    - 61 new tests added across 3 files
+    - test_external_services.py (21 tests): GitHub, Slack, itch.io mocking
+    - test_approval_flows.py (16 tests): approve, reject, timeout, selective
+    - test_error_scenarios.py (24 tests): agent failures, API errors, retries
 
 - [ ] **8.3** Write E2E tests
   - Issue: #_pending_
@@ -677,6 +678,7 @@ _Record significant changes to this plan here._
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-01-18 | Task 8.2 completed | PR #20 merged with 61 integration tests (external services, approval flows, error scenarios) |
 | 2026-01-18 | Task 8.1 completed | PR #18 merged with full workflow integration (all agents wired, approval hooks, error recovery) |
 | 2026-01-18 | Phase 7 completed | PR #16 merged with Skills (Phaser enhanced, Godot skill+scaffold, Testing enhanced) |
 | 2026-01-18 | Phase 6 completed | PR #14 merged with MCP Servers (itch.io, Slack) |
