@@ -199,6 +199,32 @@ def find_executable(name: str) -> Path | None:
     return Path(path) if path else None
 
 
+def find_claude_executable() -> Path | None:
+    """Find the Claude Code executable.
+
+    Checks PATH first, then common installation locations.
+
+    Returns:
+        Path to the claude executable, or None if not found.
+    """
+    # Check PATH first
+    claude_path = find_executable("claude")
+    if claude_path is not None:
+        return claude_path
+
+    # Check common Claude Code installation paths
+    common_paths = [
+        Path.home() / ".local" / "bin" / "claude",
+        Path("/usr/local/bin/claude"),
+        Path.home() / "bin" / "claude",
+    ]
+    for path in common_paths:
+        if path.exists() and path.is_file():
+            return path
+
+    return None
+
+
 async def run_npm_command(
     args: list[str],
     cwd: Path,
@@ -293,7 +319,7 @@ class ClaudeCodeRunner:
             FileNotFoundError: If claude executable is not found.
         """
         # Find claude executable
-        claude_path = find_executable("claude")
+        claude_path = find_claude_executable()
         if claude_path is None:
             raise FileNotFoundError(
                 "claude command not found. Please install Claude Code: https://claude.ai/code"
