@@ -144,7 +144,7 @@ async def run_subprocess(
     duration = time.monotonic() - start_time
 
     return ProcessResult(
-        return_code=process.returncode or -1,
+        return_code=process.returncode if process.returncode is not None else -1,
         stdout=stdout_data,
         stderr=stderr_data,
         timed_out=timed_out,
