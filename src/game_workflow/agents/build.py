@@ -34,8 +34,8 @@ SCAFFOLDS_DIR = Path(__file__).parent.parent.parent.parent / "templates" / "scaf
 # Default timeout for Claude Code (30 minutes)
 DEFAULT_TIMEOUT_SECONDS = 1800
 
-# Default timeout for npm operations (5 minutes)
-NPM_TIMEOUT_SECONDS = 300
+# Default timeout for npm operations (10 minutes)
+NPM_TIMEOUT_SECONDS = 600
 
 
 class BuildAgent(BaseAgent):
