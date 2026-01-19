@@ -16,7 +16,6 @@ from game_workflow.orchestrator.exceptions import AgentError, BuildFailedError
 from game_workflow.utils.subprocess import (
     ClaudeCodeRunner,
     ProcessResult,
-    find_claude_executable,
     find_executable,
     run_npm_command,
 )
@@ -477,7 +476,7 @@ Start implementing the game now. Focus on getting the core gameplay loop working
             BuildFailedError: If Claude Code is not available.
         """
         # Check claude is available
-        if find_claude_executable() is None:
+        if find_executable("claude") is None:
             raise BuildFailedError(
                 "Claude Code not found. Please install it from https://claude.ai/code",
                 build_output=None,
