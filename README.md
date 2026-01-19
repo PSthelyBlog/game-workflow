@@ -161,6 +161,7 @@ See [Skills Documentation](docs/skills.md) for details.
 |-------------|---------|---------|
 | Python | 3.11+ | Core runtime |
 | Anthropic API Key | - | Claude AI access |
+| Claude Code | Latest | Game implementation (build phase) |
 
 ### Optional (for game development)
 

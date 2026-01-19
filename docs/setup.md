@@ -14,6 +14,7 @@ Before installing game-workflow, ensure you have the following:
 | pip | Latest | Package installation |
 | Git | Any | Version control |
 | Anthropic API Key | — | Claude AI access |
+| Claude Code | Latest | Game implementation (build phase) |
 
 ### Optional (for game development)
 
@@ -244,6 +245,28 @@ For GitHub integration (release management, repository creation):
 
 ```bash
 export GITHUB_TOKEN="ghp_your-token"
+```
+
+### Claude Code Setup
+
+Claude Code is required for the build phase. It's the AI agent that implements the game based on the Game Design Document.
+
+**Installation:**
+
+Visit [claude.ai/download](https://claude.ai/download) and follow the installation instructions for your platform.
+
+**Verify installation:**
+
+```bash
+claude --version
+```
+
+**Authentication:**
+
+Claude Code uses your Anthropic API key. Ensure it's set:
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-api03-..."
 ```
 
 ### Node.js Setup (for Phaser.js games)
