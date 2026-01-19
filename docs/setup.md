@@ -253,7 +253,7 @@ Claude Code is required for the build phase. It's the AI agent that implements t
 
 **Installation:**
 
-Visit [claude.ai/download](https://claude.ai/download) and follow the installation instructions for your platform.
+Visit [claude.ai/download](https://claude.com/product/claude-code) and follow the installation instructions for your platform.
 
 **Verify installation:**
 
