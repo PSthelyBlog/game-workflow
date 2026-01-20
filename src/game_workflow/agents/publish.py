@@ -98,6 +98,21 @@ class Credit(BaseModel):
     link: str | None = Field(default=None, description="Optional link")
 
 
+class ChangelogEntry(BaseModel):
+    """A changelog entry for version history."""
+
+    version: str = Field(..., description="Version number (e.g., '1.0.0')")
+    date: str = Field(..., description="Release date (e.g., '2026-01-20')")
+    description: str = Field(..., description="Description of changes")
+
+
+class SupportLink(BaseModel):
+    """A support link entry."""
+
+    label: str = Field(..., description="Link label (e.g., 'Bug Reports')")
+    url: str = Field(..., description="Link URL")
+
+
 class TechnicalDetails(BaseModel):
     """Technical details for the store page."""
 
@@ -118,14 +133,14 @@ class VersionInfo(BaseModel):
     """Version information for the release."""
 
     current: str = Field(default="1.0.0", description="Current version")
-    changelog: list[dict[str, str]] = Field(default_factory=list, description="Changelog entries")
+    changelog: list[ChangelogEntry] = Field(default_factory=list, description="Changelog entries")
 
 
 class SupportInfo(BaseModel):
     """Support information for the store page."""
 
     message: str = Field(default="", description="Support message")
-    links: list[dict[str, str]] = Field(default_factory=list, description="Support links")
+    links: list[SupportLink] = Field(default_factory=list, description="Support links")
 
 
 class StorePageContent(BaseModel):
