@@ -39,7 +39,7 @@ Context file contents are now embedded directly in the prompt instead of using a
 
 ## Future Improvements
 
-- [ ] Add `--output-dir` option to CLI
+- [x] Add `--output-dir` option to CLI (PR #35)
 - [ ] Add `--auto-approve` flag documentation
 - [ ] Improve error messages for template rendering failures
 - [ ] Add retry logic for publish phase

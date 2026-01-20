@@ -4,6 +4,7 @@ This module provides the main CLI interface using Typer with Rich formatting.
 """
 
 import asyncio
+from pathlib import Path
 from typing import Literal
 
 import typer
@@ -130,6 +131,9 @@ def run(
     engine: Literal["phaser", "godot"] = typer.Option(
         None, "--engine", "-e", help="Game engine to use"
     ),
+    output_dir: Path | None = typer.Option(
+        None, "--output-dir", "-o", help="Directory for workflow outputs (default: state dir)"
+    ),
 ) -> None:
     """Start a new game creation workflow from a prompt."""
     settings = get_settings()
@@ -138,9 +142,11 @@ def run(
     console.print("[bold blue]Starting new workflow[/bold blue]")
     console.print(f"[bold]Prompt:[/bold] {prompt}")
     console.print(f"[bold]Engine:[/bold] {engine_to_use}")
+    if output_dir:
+        console.print(f"[bold]Output:[/bold] {output_dir}")
     console.print()
 
-    workflow = Workflow(prompt=prompt, engine=engine_to_use)
+    workflow = Workflow(prompt=prompt, engine=engine_to_use, output_dir=output_dir)
     console.print(f"[green]Created workflow:[/green] {workflow.state.id}")
 
     # Run the workflow
@@ -215,17 +221,20 @@ def cancel(
 @app.command()
 def resume(
     state_id: str = typer.Option(None, "--id", help="Specific workflow ID to resume"),
+    output_dir: Path | None = typer.Option(
+        None, "--output-dir", "-o", help="Directory for workflow outputs (overrides saved setting)"
+    ),
 ) -> None:
     """Resume a workflow from its last state."""
     workflow: Workflow | None = None
     if state_id:
         try:
-            workflow = Workflow.resume(state_id)
+            workflow = Workflow.resume(state_id, output_dir=output_dir)
         except StateNotFoundError:
             console.print(f"[red]Workflow not found:[/red] {state_id}")
             raise typer.Exit(1) from None
     else:
-        workflow = Workflow.resume_latest()
+        workflow = Workflow.resume_latest(output_dir=output_dir)
 
     if workflow is None:
         console.print("[yellow]No workflow to resume.[/yellow]")
@@ -234,6 +243,8 @@ def resume(
 
     console.print(f"[bold blue]Resuming workflow:[/bold blue] {workflow.state.id}")
     console.print(f"[bold]Current phase:[/bold] {workflow.state.phase.value}")
+    if output_dir:
+        console.print(f"[bold]Output:[/bold] {output_dir}")
     console.print()
 
     # Run the workflow
