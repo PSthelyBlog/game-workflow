@@ -13,6 +13,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from game_workflow.config import get_settings
+from game_workflow.hooks.slack_approval import SlackApprovalHook
 from game_workflow.orchestrator import StateNotFoundError, Workflow, WorkflowPhase, WorkflowState
 
 # Initialize Typer app
@@ -146,7 +147,25 @@ def run(
         console.print(f"[bold]Output:[/bold] {output_dir}")
     console.print()
 
-    workflow = Workflow(prompt=prompt, engine=engine_to_use, output_dir=output_dir)
+    # Configure Slack approval hook if credentials are available
+    approval_hook = None
+    if settings.slack.bot_token:
+        approval_hook = SlackApprovalHook(
+            channel=settings.slack.channel,
+            token=settings.slack.bot_token,
+        )
+        console.print(f"[bold]Slack:[/bold] Approval gates enabled ({settings.slack.channel})")
+    else:
+        console.print(
+            "[yellow]Warning:[/yellow] No Slack token configured, approvals will be auto-granted"
+        )
+
+    workflow = Workflow(
+        prompt=prompt,
+        engine=engine_to_use,
+        output_dir=output_dir,
+        approval_hook=approval_hook,
+    )
     console.print(f"[green]Created workflow:[/green] {workflow.state.id}")
 
     # Run the workflow
@@ -226,15 +245,25 @@ def resume(
     ),
 ) -> None:
     """Resume a workflow from its last state."""
+    settings = get_settings()
+
+    # Configure Slack approval hook if credentials are available
+    approval_hook = None
+    if settings.slack.bot_token:
+        approval_hook = SlackApprovalHook(
+            channel=settings.slack.channel,
+            token=settings.slack.bot_token,
+        )
+
     workflow: Workflow | None = None
     if state_id:
         try:
-            workflow = Workflow.resume(state_id, output_dir=output_dir)
+            workflow = Workflow.resume(state_id, output_dir=output_dir, approval_hook=approval_hook)
         except StateNotFoundError:
             console.print(f"[red]Workflow not found:[/red] {state_id}")
             raise typer.Exit(1) from None
     else:
-        workflow = Workflow.resume_latest(output_dir=output_dir)
+        workflow = Workflow.resume_latest(output_dir=output_dir, approval_hook=approval_hook)
 
     if workflow is None:
         console.print("[yellow]No workflow to resume.[/yellow]")
