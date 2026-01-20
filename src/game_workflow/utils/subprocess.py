@@ -283,7 +283,8 @@ class ClaudeCodeRunner:
 
         Args:
             prompt: The prompt/task for Claude Code.
-            context_files: Optional files to include as context.
+            context_files: Optional files to include as context (contents will be
+                embedded in the prompt since Claude Code CLI doesn't support --add-file).
             allowed_tools: Optional list of allowed tools (e.g., ["Read", "Write", "Bash"]).
 
         Returns:
@@ -299,14 +300,26 @@ class ClaudeCodeRunner:
                 "claude command not found. Please install Claude Code: https://claude.ai/code"
             )
 
-        # Build command
-        command = [str(claude_path), "-p", prompt]
+        # Build the full prompt with context files embedded
+        full_prompt = prompt
 
-        # Add context files if provided
+        # Embed context file contents in the prompt (Claude Code CLI doesn't have --add-file)
         if context_files:
+            context_parts = []
             for context_file in context_files:
                 if context_file.exists():
-                    command.extend(["--add-file", str(context_file)])
+                    try:
+                        content = context_file.read_text(encoding="utf-8")
+                        context_parts.append(
+                            f"\n\n--- Context from {context_file.name} ---\n{content}\n--- End {context_file.name} ---"
+                        )
+                    except Exception as e:
+                        self._logger.warning(f"Could not read context file {context_file}: {e}")
+            if context_parts:
+                full_prompt = prompt + "\n".join(context_parts)
+
+        # Build command
+        command = [str(claude_path), "-p", full_prompt]
 
         # Add allowed tools if specified
         if allowed_tools:
