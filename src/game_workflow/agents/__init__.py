@@ -11,6 +11,7 @@ from game_workflow.agents.base import BaseAgent
 from game_workflow.agents.build import BuildAgent
 from game_workflow.agents.design import DesignAgent
 from game_workflow.agents.publish import (
+    ChangelogEntry,
     ControlMapping,
     Credit,
     FeatureHighlight,
@@ -24,6 +25,8 @@ from game_workflow.agents.publish import (
     ReleaseType,
     Screenshot,
     StorePageContent,
+    SupportInfo,
+    SupportLink,
     TechnicalDetails,
     VersionInfo,
     get_publish_output_schema,
@@ -42,6 +45,7 @@ from game_workflow.agents.schemas import (
 __all__ = [
     "BaseAgent",
     "BuildAgent",
+    "ChangelogEntry",
     "ComplexityLevel",
     "ControlMapping",
     "Credit",
@@ -62,6 +66,8 @@ __all__ = [
     "ReleaseType",
     "Screenshot",
     "StorePageContent",
+    "SupportInfo",
+    "SupportLink",
     "TechnicalDetails",
     "TechnicalSpecification",
     "VersionInfo",

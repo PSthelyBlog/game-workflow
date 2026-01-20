@@ -2,35 +2,25 @@
 
 ## Known Issues
 
-### 1. Publish Phase Template Error
+### 1. Publish Phase Template Error (FIXED)
 
-**Status**: Open
-**Severity**: Medium
-**Location**: `src/game_workflow/agents/publish.py:603` → `templates/itchio-page.md:134`
+**Status**: Fixed
+**Fixed in**: PR #34
 
-**Error**:
+**Description**:
+The publish phase failed when rendering the itch.io store page template with:
 ```
 jinja2.exceptions.UndefinedError: 'dict object' has no attribute 'label'
 ```
 
-**Description**:
-The publish phase fails when rendering the itch.io store page template. The template expects link objects with `.label` and `.url` attributes, but receives plain dictionaries instead.
+**Fix Applied**:
+Added proper Pydantic models for nested structures that the template expects:
+- `ChangelogEntry` model with `version`, `date`, `description` fields
+- `SupportLink` model with `label`, `url` fields
+- Updated `VersionInfo.changelog` to use `list[ChangelogEntry]`
+- Updated `SupportInfo.links` to use `list[SupportLink]`
 
-**Root Cause**:
-In `templates/itchio-page.md` line 134:
-```jinja2
-- [{{ link.label }}]({{ link.url }})
-```
-
-The template uses dot notation (`link.label`) but the data passed is a dictionary that should be accessed with bracket notation (`link['label']`) or the data should be Pydantic models with proper attributes.
-
-**Fix Options**:
-1. Update the template to use bracket notation: `{{ link['label'] }}`
-2. Ensure the `store_page` data uses Pydantic models instead of raw dicts
-3. Add a Jinja2 filter or update the template context to handle both cases
-
-**Workaround**:
-The game build completes successfully before this error. The game is fully playable - only the itch.io publishing metadata fails to generate.
+This ensures that when `model_dump()` is called, the nested objects have the expected attribute structure for Jinja2 template rendering.
 
 ---
 
