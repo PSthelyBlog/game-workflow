@@ -1,8 +1,12 @@
 # Migration Plan: Anthropic Python SDK → Claude Agent SDK
 
+> **Status**: ✅ Complete
+> **PR**: #38
+> **Merged**: 2026-01-22
+
 ## Objective
 
-Replace `anthropic` Python SDK with `claude-agent-sdk` to enable automatic authentication inheritance from Claude Code CLI (supports both subscription and API key auth).
+Replace `anthropic` Python SDK with `claude-code-sdk` to enable automatic authentication inheritance from Claude Code CLI (supports both subscription and API key auth).
 
 ## Key Benefit
 
@@ -255,3 +259,41 @@ If issues arise:
 - The Agent SDK bundles Claude Code CLI - no separate installation needed
 - Existing ClaudeCodeRunner in subprocess.py can be deprecated but kept for compatibility
 - All JSON parsing logic remains unchanged - only the API call layer changes
+
+---
+
+## Completion Summary (2026-01-22)
+
+### What Was Done
+
+1. **Created `src/game_workflow/utils/agent_sdk.py`** - New wrapper module with:
+   - `generate_structured_response()` for text generation tasks
+   - `invoke_claude_code()` for agentic file/command tasks
+
+2. **Updated `pyproject.toml`** - Changed dependency from `anthropic>=0.40.0` to `claude-code-sdk>=0.0.10`
+
+3. **Migrated DesignAgent** - Removed Anthropic client, uses `generate_structured_response()`
+
+4. **Migrated PublishAgent** - Removed Anthropic client, uses `generate_structured_response()`
+
+5. **Migrated BuildAgent** - Replaced `ClaudeCodeRunner` with `invoke_claude_code()`
+
+6. **Updated BaseAgent** - API key validation now issues deprecation warning instead of error
+
+7. **Updated tests** - New mock fixtures in `conftest.py`, updated all test files
+
+8. **Updated documentation** - README.md and docs/setup.md with new auth instructions
+
+### Key Technical Details
+
+- Package name is `claude-code-sdk` (not `claude-agent-sdk`)
+- Available versions start at 0.0.10 (not 0.1.0)
+- SDK uses async generators for streaming responses
+- System prompt is combined with user prompt (SDK doesn't have separate system_prompt option)
+- `ClaudeCodeOptions` accepts `model`, `cwd`, `max_turns`, `allowed_tools`
+
+### Tests
+
+- All 337 unit tests pass
+- Ruff check and format pass
+- CI passed on PR #38

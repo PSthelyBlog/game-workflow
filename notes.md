@@ -1526,6 +1526,95 @@ All 9 phases are now complete:
 
 ---
 
+## Session 17: 2026-01-22 — Agent SDK Migration Complete
+
+### Summary
+
+Migrated from Anthropic Python SDK to Claude Agent SDK (claude-code-sdk) in PR #38. This enables automatic authentication inheritance from Claude Code CLI.
+
+### Key Implementation Decisions
+
+**Package Name Discovery:**
+- Original plan referenced `claude-agent-sdk` but actual package is `claude-code-sdk`
+- Version constraint `>=0.1.0` failed - only 0.0.x versions available
+- Final dependency: `claude-code-sdk>=0.0.10`
+
+**SDK Wrapper Module (`utils/agent_sdk.py`):**
+- `generate_structured_response()` for text generation without tools
+- `invoke_claude_code()` for agentic tasks with file access
+- System prompt combined with user prompt (SDK lacks separate system_prompt option)
+- Uses async generators: `async for message in query(...)`
+
+**Agent Migrations:**
+- DesignAgent: Removed `self._client` property, `_extract_text()` method
+- PublishAgent: Same pattern as DesignAgent
+- BuildAgent: Replaced `ClaudeCodeRunner` with `invoke_claude_code()`
+
+**BaseAgent Changes:**
+- `_validate_config()` no longer raises error for missing API key
+- Issues `DeprecationWarning` if API key is set (not required with SDK)
+
+**Test Updates:**
+- New fixtures in `conftest.py`: `mock_generate_structured_response`, `mock_invoke_claude_code`, `mock_agent_sdk_query`
+- All tests use `monkeypatch.setattr()` instead of `patch.object()`
+- Removed tests for old `client` property
+
+### Issues Encountered & Solutions
+
+1. **`gh` command not found:**
+   - gh CLI available at `~/bin/gh`
+   - Solution: Use full path for all gh commands
+
+2. **Version constraint failure:**
+   - `claude-code-sdk>=0.1.0` not found on PyPI
+   - Solution: Changed to `>=0.0.10` after checking available versions
+
+3. **pytest bad interpreter:**
+   - venv pytest shebang was broken
+   - Solution: Run via `python -m pytest`
+
+4. **Ruff linting errors:**
+   - Import sorting (I001) - fixed with `ruff check --fix`
+   - Unused imports (F401) - fixed with `ruff check --fix`
+   - TC003 Path import - added `# noqa: TC003` comment
+   - ARG001 unused args - renamed to `*_args, **_kwargs`
+
+### Files Modified
+
+```
+src/game_workflow/
+├── utils/
+│   ├── __init__.py          (+2 exports)
+│   └── agent_sdk.py         (new, 155 lines) - SDK wrapper functions
+├── agents/
+│   ├── base.py              (modified) - deprecation warning
+│   ├── design.py            (modified) - removed Anthropic, use Agent SDK
+│   ├── publish.py           (modified) - removed Anthropic, use Agent SDK
+│   └── build.py             (modified) - replaced ClaudeCodeRunner
+
+pyproject.toml               (modified) - claude-code-sdk>=0.0.10
+
+tests/
+├── conftest.py              (modified) - new mock fixtures
+├── unit/
+│   ├── test_agents.py       (modified) - API key tests
+│   ├── test_design_agent.py (modified) - new mocking
+│   ├── test_publish_agent.py(modified) - new mocking
+│   └── test_build_agent.py  (modified) - new mocking
+
+README.md                    (modified) - auth documentation
+docs/setup.md                (modified) - auth documentation
+```
+
+### Test Results
+
+- 337 unit tests pass
+- Ruff check passes
+- Ruff format passes
+- CI passed on PR #38
+
+---
+
 ## Useful References
 
 - **CLAUDE.md**: Project specification and guidelines
