@@ -55,15 +55,27 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -e .
 ```
 
-### Configuration
+### Authentication
 
-Set your Anthropic API key:
+The workflow supports two authentication methods:
+
+**Option 1: Claude Subscription (Pro/Max) - Recommended**
+
+If you have a Claude subscription, simply run `claude` in your terminal to login. The Claude Agent SDK will automatically use your subscription authentication.
+
+```bash
+claude  # Login to Claude Code CLI
+```
+
+**Option 2: API Key**
+
+Set your Anthropic API key as an environment variable:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-For Slack approvals and itch.io publishing, see the [Setup Guide](docs/setup.md).
+The Claude Agent SDK automatically detects and uses whichever authentication is available. For Slack approvals and itch.io publishing, see the [Setup Guide](docs/setup.md).
 
 ### Create Your First Game
 
@@ -160,8 +172,9 @@ See [Skills Documentation](docs/skills.md) for details.
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
 | Python | 3.11+ | Core runtime |
-| Anthropic API Key | - | Claude AI access |
 | Claude Code | Latest | Game implementation (build phase) |
+
+**Authentication**: Either a Claude subscription (Pro/Max) OR an Anthropic API key is required.
 
 ### Optional (for game development)
 
@@ -185,7 +198,9 @@ See [Skills Documentation](docs/skills.md) for details.
 ### Environment Variables
 
 ```bash
-# Required
+# Authentication (one of the following)
+# Option 1: Use Claude subscription (just run 'claude' to login)
+# Option 2: Set API key
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # Optional - Slack approvals

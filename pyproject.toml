@@ -24,7 +24,7 @@ classifiers = [
     "Topic :: Software Development :: Code Generators",
 ]
 dependencies = [
-    "anthropic>=0.40.0",
+    "claude-code-sdk>=0.0.10",  # Replaces anthropic, provides Agent SDK
     "mcp>=1.0.0",
     "httpx>=0.25.0",
     "pydantic>=2.0.0",

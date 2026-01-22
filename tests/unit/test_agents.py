@@ -1,7 +1,6 @@
 """Tests for the agents module."""
 
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 
@@ -81,11 +80,11 @@ class TestDesignAgentBasics:
         assert agent.output_dir is None
 
 
-class TestDesignAgentAPIKey:
-    """Tests for API key handling."""
+class TestAgentSDKAuth:
+    """Tests for Agent SDK authentication (API key is optional)."""
 
-    def test_client_requires_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test that client property raises without API key."""
+    def test_validates_without_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that validation passes without API key (SDK handles auth)."""
         # Clear API key
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
@@ -94,21 +93,26 @@ class TestDesignAgentAPIKey:
         reload_settings()
 
         agent = DesignAgent()
-        with pytest.raises(AgentError, match="API key"):
-            _ = agent.client
+        # Should not raise - API key is optional with Agent SDK
+        agent._validate_config()  # No error expected
 
-    def test_client_creates_with_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test that client is created with API key."""
+    def test_warns_with_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that deprecation warning is issued when API key is set."""
+        import warnings
+
         monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
 
         from game_workflow.config import reload_settings
 
         reload_settings()
 
-        with patch("game_workflow.agents.design.Anthropic") as mock_anthropic:
-            agent = DesignAgent()
-            _ = agent.client
-            mock_anthropic.assert_called_once_with(api_key="test-key")
+        agent = DesignAgent()
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            agent._validate_config()
+            assert len(w) == 1
+            assert "not required" in str(w[0].message)
+            assert issubclass(w[0].category, DeprecationWarning)
 
 
 class TestDesignAgentParsing:

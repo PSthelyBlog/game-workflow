@@ -534,15 +534,23 @@ class TestSubprocessUtilities:
             await agent._install_dependencies(output_dir)
 
     @pytest.mark.asyncio
-    async def test_invoke_claude_code_not_found(self, output_dir: Path) -> None:
-        """Test error when claude command not found."""
+    async def test_invoke_claude_code_uses_agent_sdk(
+        self, output_dir: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test that _invoke_claude_code uses the Agent SDK."""
         agent = BuildAgent()
 
-        with (
-            patch("game_workflow.agents.build.find_executable", return_value=None),
-            pytest.raises(BuildFailedError, match="Claude Code not found"),
-        ):
-            await agent._invoke_claude_code(output_dir, "test prompt")
+        # Mock the Agent SDK function
+        mock_invoke = AsyncMock(
+            return_value={"success": True, "output": "Build completed", "error": None}
+        )
+        monkeypatch.setattr("game_workflow.agents.build.invoke_claude_code", mock_invoke)
+
+        result = await agent._invoke_claude_code(output_dir, "test prompt")
+
+        mock_invoke.assert_called_once()
+        assert result.success is True
+        assert result.stdout == "Build completed"
 
 
 # =============================================================================

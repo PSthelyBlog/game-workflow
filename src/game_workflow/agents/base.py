@@ -97,15 +97,19 @@ class BaseAgent(ABC):
         self._logger.error(message, exc_info=exc, extra=kwargs)
 
     def _validate_config(self) -> None:
-        """Validate that required configuration is present.
+        """Validate configuration (API key no longer required).
 
-        Raises:
-            AgentError: If required configuration is missing.
+        The Claude Agent SDK inherits authentication from the Claude Code CLI,
+        so API key is optional. If set, a deprecation warning is logged.
         """
-        if not self.api_key:
-            raise AgentError(
-                self.name,
-                "Anthropic API key not configured. Set ANTHROPIC_API_KEY environment variable.",
+        import warnings
+
+        if self.api_key:
+            warnings.warn(
+                "ANTHROPIC_API_KEY is set but not required. "
+                "Claude Agent SDK inherits authentication from Claude Code CLI.",
+                DeprecationWarning,
+                stacklevel=3,
             )
 
     @abstractmethod
