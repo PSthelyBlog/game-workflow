@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING, Any
 
 from game_workflow.agents.base import BaseAgent
 from game_workflow.orchestrator.exceptions import AgentError, BuildFailedError
+from game_workflow.utils.agent_sdk import invoke_claude_code
 from game_workflow.utils.subprocess import (
-    ClaudeCodeRunner,
     ProcessResult,
     find_executable,
     run_npm_command,
@@ -470,25 +470,13 @@ Start implementing the game now. Focus on getting the core gameplay loop working
             gdd_path: Optional path to GDD file for context.
 
         Returns:
-            ProcessResult from Claude Code.
+            ProcessResult-like dict from Agent SDK.
 
         Raises:
-            BuildFailedError: If Claude Code is not available.
+            BuildFailedError: If Claude Code execution fails.
         """
-        # Check claude is available
-        if find_executable("claude") is None:
-            raise BuildFailedError(
-                "Claude Code not found. Please install it from https://claude.ai/code",
-                build_output=None,
-            )
-
-        runner = ClaudeCodeRunner(
-            working_dir=project_dir,
-            timeout_seconds=self.timeout_seconds,
-        )
-
         # Add GDD file as context if available
-        context_files = []
+        context_files: list[Path] = []
         if gdd_path and gdd_path.exists():
             context_files.append(gdd_path)
 
@@ -497,13 +485,22 @@ Start implementing the game now. Focus on getting the core gameplay loop working
         if skill_file.exists():
             context_files.append(skill_file)
 
-        result = await runner.run(
+        # Use Agent SDK to invoke Claude Code
+        result = await invoke_claude_code(
+            working_dir=project_dir,
             prompt=prompt,
             context_files=context_files if context_files else None,
             allowed_tools=["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
         )
 
-        return result
+        # Convert Agent SDK result to ProcessResult format
+        return ProcessResult(
+            return_code=0 if result["success"] else 1,
+            stdout=result["output"],
+            stderr=result.get("error", "") or "",
+            timed_out=False,
+            duration_seconds=0.0,
+        )
 
     async def _build_game(self, project_dir: Path) -> ProcessResult:
         """Run npm build to create the distributable.

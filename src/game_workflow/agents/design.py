@@ -12,9 +12,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from anthropic import Anthropic
-from anthropic.types import Message, TextBlock
-
 from game_workflow.agents.base import DEFAULT_MODEL, BaseAgent
 from game_workflow.agents.schemas import (
     DesignOutput,
@@ -27,6 +24,7 @@ from game_workflow.agents.schemas import (
     get_tech_spec_schema,
 )
 from game_workflow.orchestrator.exceptions import AgentError
+from game_workflow.utils.agent_sdk import generate_structured_response
 from game_workflow.utils.templates import render_concept, render_gdd
 
 if TYPE_CHECKING:
@@ -130,31 +128,11 @@ class DesignAgent(BaseAgent):
         super().__init__(model=model, state=state)
         self.num_concepts = max(1, min(5, num_concepts))  # Clamp to 1-5
         self.output_dir = output_dir
-        self._client: Anthropic | None = None
 
     @property
     def name(self) -> str:
         """Get the agent's name."""
         return "DesignAgent"
-
-    @property
-    def client(self) -> Anthropic:
-        """Get or create the Anthropic client.
-
-        Returns:
-            Configured Anthropic client.
-
-        Raises:
-            AgentError: If API key is not configured.
-        """
-        if self._client is None:
-            if not self.api_key:
-                raise AgentError(
-                    self.name,
-                    "Anthropic API key not configured. Set ANTHROPIC_API_KEY.",
-                )
-            self._client = Anthropic(api_key=self.api_key)
-        return self._client
 
     async def run(
         self,
@@ -262,20 +240,14 @@ class DesignAgent(BaseAgent):
             schema=json.dumps(schema, indent=2),
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=8192,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Generate {self.num_concepts} distinct game concepts based on: '{prompt}'. Return as a JSON array.",
-                }
-            ],
-            system=system_prompt,
-        )
+        user_prompt = f"Generate {self.num_concepts} distinct game concepts based on: '{prompt}'. Return as a JSON array."
 
-        # Extract text from response
-        text = self._extract_text(response)
+        # Use Agent SDK for text generation
+        text = await generate_structured_response(
+            prompt=user_prompt,
+            system_prompt=system_prompt,
+            model=self.model,
+        )
 
         # Parse JSON from response
         concepts = self._parse_concepts_response(text)
@@ -313,19 +285,16 @@ class DesignAgent(BaseAgent):
             schema=json.dumps(schema, indent=2),
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=16384,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Create a complete Game Design Document for '{concept.title}'. Return as JSON.",
-                }
-            ],
-            system=system_prompt,
+        user_prompt = (
+            f"Create a complete Game Design Document for '{concept.title}'. Return as JSON."
         )
 
-        text = self._extract_text(response)
+        # Use Agent SDK for text generation
+        text = await generate_structured_response(
+            prompt=user_prompt,
+            system_prompt=system_prompt,
+            model=self.model,
+        )
 
         # Parse JSON
         gdd_data = self._parse_json_response(text)
@@ -362,19 +331,14 @@ class DesignAgent(BaseAgent):
             schema=json.dumps(schema, indent=2),
         )
 
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=8192,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Create a technical specification for '{gdd.title}'. Return as JSON.",
-                }
-            ],
-            system=system_prompt,
-        )
+        user_prompt = f"Create a technical specification for '{gdd.title}'. Return as JSON."
 
-        text = self._extract_text(response)
+        # Use Agent SDK for text generation
+        text = await generate_structured_response(
+            prompt=user_prompt,
+            system_prompt=system_prompt,
+            model=self.model,
+        )
 
         # Parse JSON
         spec_data = self._parse_json_response(text)
@@ -459,22 +423,6 @@ class DesignAgent(BaseAgent):
                 self.add_artifact(name, path)
 
         return artifacts
-
-    def _extract_text(self, response: Message) -> str:
-        """Extract text content from an API response.
-
-        Args:
-            response: The API response message.
-
-        Returns:
-            The text content, or empty string if no text block found.
-        """
-        if not response.content:
-            return ""
-        for block in response.content:
-            if isinstance(block, TextBlock):
-                return block.text
-        return ""
 
     def _parse_json_response(self, text: str) -> dict[str, Any]:
         """Parse JSON from a model response.

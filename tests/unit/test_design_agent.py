@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
-from unittest.mock import MagicMock, patch
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -19,7 +18,6 @@ from game_workflow.agents.schemas import (
     GameEngine,
     TechnicalSpecification,
 )
-from game_workflow.orchestrator.exceptions import AgentError
 
 # =============================================================================
 # Sample Data Fixtures
@@ -346,18 +344,25 @@ class TestDesignAgent:
         agent3 = DesignAgent(num_concepts=3)
         assert agent3.num_concepts == 3
 
-    def test_agent_requires_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test that agent raises error without API key."""
-        # Clear API key
-        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    def test_agent_warns_with_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that agent logs deprecation warning when API key is set."""
+        import warnings
+
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
 
         from game_workflow.config import reload_settings
 
         reload_settings()
 
         agent = DesignAgent()
-        with pytest.raises(AgentError, match="API key"):
-            _ = agent.client
+
+        # _validate_config should warn that API key is not required
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            agent._validate_config()
+            assert len(w) == 1
+            assert "not required" in str(w[0].message)
+            assert issubclass(w[0].category, DeprecationWarning)
 
     def test_parse_json_response_clean(self) -> None:
         """Test parsing clean JSON response."""
@@ -406,49 +411,37 @@ class TestDesignAgent:
         mock_tech_spec_response: str,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Test full run with mocked API responses."""
-        # Set API key
-        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
-
-        # Clear settings cache
-        from game_workflow.config import reload_settings
-
-        reload_settings()
-
-        from anthropic.types import TextBlock
-
+        """Test full run with mocked Agent SDK responses."""
         # Track call count to return different responses
         call_count = [0]
         responses = [mock_concept_response, mock_gdd_response, mock_tech_spec_response]
 
-        def mock_create(*_args, **_kwargs):
-            response = MagicMock()
-            text_block = TextBlock(type="text", text=responses[min(call_count[0], 2)])
-            response.content = [text_block]
+        async def mock_generate(*_args: Any, **_kwargs: Any) -> str:
+            response = responses[min(call_count[0], 2)]
             call_count[0] += 1
             return response
 
-        # Patch the Anthropic client
-        with patch("game_workflow.agents.design.Anthropic") as mock_anthropic:
-            mock_client = MagicMock()
-            mock_client.messages.create = mock_create
-            mock_anthropic.return_value = mock_client
+        # Patch the Agent SDK function
+        monkeypatch.setattr(
+            "game_workflow.agents.design.generate_structured_response",
+            mock_generate,
+        )
 
-            agent = DesignAgent(num_concepts=1, output_dir=tmp_path)
-            result = await agent.run(sample_prompt, engine="phaser")
+        agent = DesignAgent(num_concepts=1, output_dir=tmp_path)
+        result = await agent.run(sample_prompt, engine="phaser")
 
-            assert result["status"] == "success"
-            assert "concepts" in result
-            assert "selected_concept" in result
-            assert "gdd" in result
-            assert "tech_spec" in result
-            assert "artifacts" in result
+        assert result["status"] == "success"
+        assert "concepts" in result
+        assert "selected_concept" in result
+        assert "gdd" in result
+        assert "tech_spec" in result
+        assert "artifacts" in result
 
-            # Check artifacts were saved
-            assert (tmp_path / "concept.json").exists()
-            assert (tmp_path / "gdd.json").exists()
-            assert (tmp_path / "gdd.md").exists()
-            assert (tmp_path / "tech-spec.json").exists()
+        # Check artifacts were saved
+        assert (tmp_path / "concept.json").exists()
+        assert (tmp_path / "gdd.json").exists()
+        assert (tmp_path / "gdd.md").exists()
+        assert (tmp_path / "tech-spec.json").exists()
 
     @pytest.mark.asyncio
     async def test_run_handles_invalid_engine(
@@ -461,33 +454,23 @@ class TestDesignAgent:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test that invalid engine falls back to phaser."""
-        monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
-
-        from game_workflow.config import reload_settings
-
-        reload_settings()
-
-        from anthropic.types import TextBlock
-
         call_count = [0]
         responses = [mock_concept_response, mock_gdd_response, mock_tech_spec_response]
 
-        def mock_create(*_args, **_kwargs):
-            response = MagicMock()
-            text_block = TextBlock(type="text", text=responses[min(call_count[0], 2)])
-            response.content = [text_block]
+        async def mock_generate(*_args: Any, **_kwargs: Any) -> str:
+            response = responses[min(call_count[0], 2)]
             call_count[0] += 1
             return response
 
-        with patch("game_workflow.agents.design.Anthropic") as mock_anthropic:
-            mock_client = MagicMock()
-            mock_client.messages.create = mock_create
-            mock_anthropic.return_value = mock_client
+        monkeypatch.setattr(
+            "game_workflow.agents.design.generate_structured_response",
+            mock_generate,
+        )
 
-            agent = DesignAgent(num_concepts=1, output_dir=tmp_path)
-            result = await agent.run(sample_prompt, engine="invalid_engine")
+        agent = DesignAgent(num_concepts=1, output_dir=tmp_path)
+        result = await agent.run(sample_prompt, engine="invalid_engine")
 
-            assert result["status"] == "success"
+        assert result["status"] == "success"
 
 
 # =============================================================================

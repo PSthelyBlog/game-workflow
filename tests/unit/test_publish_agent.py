@@ -5,10 +5,9 @@ from __future__ import annotations
 import json
 import zipfile
 from typing import TYPE_CHECKING, Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
-from anthropic.types import Message, TextBlock, Usage
 
 from game_workflow.agents.publish import (
     ControlMapping,
@@ -158,9 +157,9 @@ def sample_store_page_data() -> dict[str, Any]:
 
 
 @pytest.fixture
-def sample_api_response() -> Message:
-    """Create a sample API response with store page content."""
-    store_page_json = json.dumps(
+def sample_api_response_text() -> str:
+    """Create a sample API response text with store page content."""
+    return json.dumps(
         {
             "title": "Time Twist",
             "tagline": "Bend time, solve puzzles, master the paradox.",
@@ -176,17 +175,6 @@ def sample_api_response() -> Message:
             ],
             "tags": ["puzzle", "platformer", "indie"],
         }
-    )
-
-    return Message(
-        id="msg_test",
-        type="message",
-        role="assistant",
-        content=[TextBlock(type="text", text=store_page_json)],
-        model="claude-sonnet-4-5-20250929",
-        stop_reason="end_turn",
-        stop_sequence=None,
-        usage=Usage(input_tokens=100, output_tokens=200),
     )
 
 
@@ -403,17 +391,18 @@ class TestPublishAgentBasic:
         assert agent.model == "claude-sonnet-4-5-20250929"
         assert agent.output_dir == tmp_path
 
-    def test_client_property_without_api_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Test that accessing client without API key raises error."""
+    def test_config_validates_without_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test that validation passes without API key (SDK handles auth)."""
         monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+        from game_workflow.config import reload_settings
+
+        reload_settings()
+
         agent = PublishAgent()
-        agent._settings = MagicMock()
-        agent._settings.anthropic_api_key = None
 
-        with pytest.raises(AgentError) as exc_info:
-            _ = agent.client
-
-        assert "API key" in str(exc_info.value)
+        # Should not raise - API key is optional with Agent SDK
+        agent._validate_config()  # No error expected
 
 
 class TestPublishAgentGDDLoading:
@@ -756,19 +745,24 @@ class TestPublishAgentRun:
         self,
         game_dir: Path,
         sample_gdd_data: dict,
-        sample_api_response: Message,
+        sample_api_response_text: str,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Test full publish workflow with mocked API."""
+        """Test full publish workflow with mocked Agent SDK."""
         agent = PublishAgent(output_dir=tmp_path / "publish")
 
-        with patch.object(agent, "_client") as mock_client:
-            mock_client.messages.create.return_value = sample_api_response
+        # Mock the Agent SDK function
+        mock_generate = AsyncMock(return_value=sample_api_response_text)
+        monkeypatch.setattr(
+            "game_workflow.agents.publish.generate_structured_response",
+            mock_generate,
+        )
 
-            result = await agent.run(
-                game_dir=game_dir,
-                gdd_data=sample_gdd_data,
-            )
+        result = await agent.run(
+            game_dir=game_dir,
+            gdd_data=sample_gdd_data,
+        )
 
         assert result["status"] == "success"
         assert "store_page" in result
@@ -780,8 +774,9 @@ class TestPublishAgentRun:
         self,
         game_dir: Path,
         sample_gdd_data: dict,
-        sample_api_response: Message,
+        sample_api_response_text: str,
         tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test workflow with GitHub release enabled."""
         agent = PublishAgent(output_dir=tmp_path / "publish")
@@ -790,44 +785,52 @@ class TestPublishAgentRun:
             create_github_release=True,
         )
 
-        with patch.object(agent, "_client") as mock_client:
-            mock_client.messages.create.return_value = sample_api_response
+        # Mock the Agent SDK function
+        mock_generate = AsyncMock(return_value=sample_api_response_text)
+        monkeypatch.setattr(
+            "game_workflow.agents.publish.generate_structured_response",
+            mock_generate,
+        )
 
-            result = await agent.run(
-                game_dir=game_dir,
-                gdd_data=sample_gdd_data,
-                config=config,
-            )
+        result = await agent.run(
+            game_dir=game_dir,
+            gdd_data=sample_gdd_data,
+            config=config,
+        )
 
         assert result["github_release"] is not None
         assert result["github_release"]["tag"] == "v1.0.0"
 
 
-class TestPublishAgentTextExtraction:
-    """Tests for API response text extraction."""
+class TestPublishAgentAgentSDK:
+    """Tests for Agent SDK integration."""
 
-    def test_extract_text_from_response(self, sample_api_response: Message) -> None:
-        """Test extracting text from API response."""
-        agent = PublishAgent()
-        text = agent._extract_text(sample_api_response)
-        assert "Time Twist" in text
+    @pytest.mark.asyncio
+    async def test_generate_marketing_copy_uses_agent_sdk(
+        self,
+        sample_gdd_data: dict,
+        sample_api_response_text: str,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Test that _generate_marketing_copy uses the Agent SDK."""
+        from game_workflow.agents.schemas import GameDesignDocument
 
-    def test_extract_text_empty_response(self) -> None:
-        """Test extracting text from empty response."""
         agent = PublishAgent()
-        response = Message(
-            id="msg_test",
-            type="message",
-            role="assistant",
-            content=[],
-            model="claude-sonnet-4-5-20250929",
-            stop_reason="end_turn",
-            stop_sequence=None,
-            usage=Usage(input_tokens=0, output_tokens=0),
+        gdd = GameDesignDocument.model_validate(sample_gdd_data)
+        config = PublishConfig(project_name="test-game")
+
+        # Mock the Agent SDK function
+        mock_generate = AsyncMock(return_value=sample_api_response_text)
+        monkeypatch.setattr(
+            "game_workflow.agents.publish.generate_structured_response",
+            mock_generate,
         )
 
-        text = agent._extract_text(response)
-        assert text == ""
+        result = await agent._generate_marketing_copy(gdd, config)
+
+        # Verify the mock was called
+        mock_generate.assert_called_once()
+        assert result.title == "Time Twist"
 
 
 class TestPublishAgentGDDSummary:

@@ -13,8 +13,9 @@ Before installing game-workflow, ensure you have the following:
 | Python | 3.11+ | Core runtime |
 | pip | Latest | Package installation |
 | Git | Any | Version control |
-| Anthropic API Key | — | Claude AI access |
 | Claude Code | Latest | Game implementation (build phase) |
+
+**Authentication**: Either a Claude subscription (Pro/Max) OR an Anthropic API key is required. The Claude Agent SDK automatically detects and uses whichever is available.
 
 ### Optional (for game development)
 
@@ -99,11 +100,22 @@ game-workflow status
 
 Create a `.env` file in your project root or export these variables:
 
-**Required:**
+**Authentication (choose one):**
+
+The Claude Agent SDK supports two authentication methods:
 
 ```bash
+# Option 1: Claude Subscription (Pro/Max) - Recommended
+# Simply run 'claude' in your terminal to login. The SDK will automatically
+# use your subscription authentication. No environment variable needed.
+
+# Option 2: API Key
+# Set your Anthropic API key:
 export ANTHROPIC_API_KEY="sk-ant-api03-..."
 ```
+
+The SDK automatically detects and uses whichever authentication method is available.
+Subscription auth takes priority if both are present.
 
 **Recommended:**
 
@@ -263,11 +275,24 @@ claude --version
 
 **Authentication:**
 
-Claude Code uses your Anthropic API key. Ensure it's set:
+The Claude Agent SDK automatically inherits authentication from Claude Code CLI.
+
+**Option 1: Subscription Auth (Pro/Max users)**
+
+```bash
+# Simply login to Claude Code CLI
+claude
+
+# The SDK will automatically use your subscription credentials
+```
+
+**Option 2: API Key Auth**
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-api03-..."
 ```
+
+The SDK automatically detects and prioritizes subscription auth when available.
 
 ### Node.js Setup (for Phaser.js games)
 
@@ -352,13 +377,19 @@ game-workflow resume
 
 ### Common Issues
 
-**"ANTHROPIC_API_KEY not set"**
+**"Authentication not available"**
 
-Make sure your API key is exported:
+Ensure you have either:
 
-```bash
-export ANTHROPIC_API_KEY="sk-ant-api03-..."
-```
+1. Logged in to Claude Code CLI (subscription users):
+   ```bash
+   claude  # Follow login prompts
+   ```
+
+2. Or set your API key:
+   ```bash
+   export ANTHROPIC_API_KEY="sk-ant-api03-..."
+   ```
 
 **"No module named 'game_workflow'"**
 
